@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jar Fanmade</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Microsoft Blue: #0078D4
+                        'primary': '#0078D4', // Microsoft-style Blue
+                        'secondary': '#f3f4f6', // Light Gray
+                        'accent': '#107c10', // Microsoft Green (Excel/Teams)
+                        'danger': '#dc2626', // Red 600
+                        'background-light': '#ffffff', // Clean white background (Microsoft standard)
+                        'primary-dark': '#005a9e', // Darker Blue for hover
+                        'black-text': '#111827', // Dark text
+                        'border-gray': '#e5e7eb', // Light border
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* General styling for a Microsoft-style professional, crisp look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--tw-colors-background-light); /* Clean white background */
+        }
+
+        /* Styling for history lists to enable internal scrolling */
+        .history-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 0.5rem; /* Slightly smaller radius for MS look */
+            border: 1px solid var(--tw-colors-border-gray);
+            background-color: white;
+        }
+
+        /* Custom scrollbar for professional look */
+        .history-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background-color: #b0d8f7; /* Light Blue/Gray scrollbar */
+            border-radius: 4px;
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        /* Custom shadow for prominent cards (Subtle, clean elevation) */
+        .corporate-card-pro {
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--tw-colors-border-gray);
+        }
+        
+        /* Net Balance Card Highlight */
+        .net-balance-highlight {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06);
+            transform: scale(1.01);
+            transition: transform 0.2s;
+        }
+
+        /* --- ENHANCED INPUT STYLES --- */
+        input:not([type="file"]), select, textarea {
+            border: 1px solid #a3a3a3; /* Defined gray border */
+            box-shadow: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* Focused input style (Standard MS blue focus ring) */
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--tw-colors-primary);
+            box-shadow: 0 0 0 1px var(--tw-colors-primary);
+            outline: none;
+            transform: scale(1.01);
+        }
+        
+        /* Custom Arrow for Select element */
+        #client-selector {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23374151' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+        
+        /* Disabled button style for better visibility */
+        .client-action-disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+            box-shadow: none !important;
+        }
+
+        /* Search input with icon padding */
+        .search-input-container {
+            position: relative;
+        }
+        .search-input-container input {
+            padding-left: 2.5rem;
+        }
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        /* Added subtle hover transform to primary buttons */
+        .primary-action-btn:hover {
+            transform: scale(1.01);
+        }
+        
+        /* Subtle transform on general client buttons */
+        .client-dependent-btn {
+            transition: background-color 0.15s, transform 0.15s, opacity 0.15s;
+        }
+        .client-dependent-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+        }
+
+        /* --- NEW DROPDOWN STYLES --- */
+        #data-dropdown-container {
+            position: absolute;
+            top: 20px; 
+            right: 40px; 
+            z-index: 50;
+        }
+        @media (max-width: 1024px) {
+            #data-dropdown-container {
+                top: 10px;
+                right: 10px;
+            }
+        }
+        .circular-button {
+            width: 50px; 
+            height: 50px; 
+            border-radius: 50%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15), 0 3px 6px -2px rgba(0, 0, 0, 0.1); 
+        }
+        #data-dropdown-menu {
+            position: absolute;
+            top: 100%; 
+            right: 0;
+            width: 280px; 
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+        }
+        #data-dropdown-menu.visible {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="p-6 md:p-10">
+
+    <div id="data-dropdown-container">
+        
+        <button onclick="toggleDataDropdown()" 
+                onblur="closeDataDropdown()" 
+                class="bg-primary hover:bg-primary-dark text-white circular-button transition duration-150 transform hover:scale-110 focus:ring-4 focus:ring-primary/50"
+                aria-label="Backup and Restore"
+                title="Backup & Restore">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+        </button>
+        
+        <div id="data-dropdown-menu" class="bg-white p-4 rounded-xl corporate-card-pro shadow-2xl">
+            <h3 class="text-lg font-bold text-primary mb-4 border-b border-gray-200 pb-3">Backup & Restore</h3>
+            <div class="grid grid-cols-1 gap-4">
+                
+                <button onclick="promptExportData()" class="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:bg-primary-dark transition duration-150 primary-action-btn">
+                    Export Data
+                </button>
+                
+                <div class="relative">
+                    <label for="import-file" class="block w-full text-center bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg shadow-sm hover:bg-primary transition duration-150 cursor-pointer primary-action-btn">
+                        Import Data
+                    </label>
+                    <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="absolute inset-0 opacity-0 cursor-pointer">
+                </div>
+            </div>
+            <p class="text-xs text-danger mt-3 text-center font-medium">Warning: Importing will overwrite ALL current local data.</p>
+        </div>
+    </div>
+    <div id="app" class="max-w-6xl mx-auto space-y-10">
+        <header class="pb-6 border-b-2 border-primary/20 text-left">
+            <h1 class="text-4xl font-extrabold text-black-text tracking-tight uppercase">
+                Jar Fanmade
+            </h1>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <div class="lg:col-span-2 bg-white p-6 rounded-xl corporate-card-pro">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">🔍 Select Active Client</h2>
+                
+                <label for="client-search-input" class="block text-sm font-medium text-gray-600 mb-1">Search/Filter Client</label>
+                
+                <div class="search-input-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 search-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                    <input type="text" id="client-search-input" placeholder="Type name to search..." class="mb-4 block w-full rounded-lg border-gray-300 shadow-sm p-3 transition duration-150">
+                </div>
+                
+                <label for="client-selector" class="block text-sm font-medium text-gray-600 mb-1">Active Client</label>
+                <select id="client-selector" class="block w-full rounded-lg border-gray-300 shadow-sm p-3 bg-white font-semibold transition duration-150"></select>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl corporate-card-pro flex flex-col justify-between">
+                 <h2 class="text-xl font-bold text-primary mb-4 border-b border-primary/20 pb-3">➕ New Client Setup</h2>
+                 <p class="text-sm text-gray-600 mb-4">Create a new ledger and set a default hourly rate for a new client.</p>
+                 <button onclick="addNewClient()" class="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg shadow-xl hover:bg-primary-dark transition duration-150 primary-action-btn">
+                    + Add New Client
+                </button>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl corporate-card-pro flex flex-col justify-between">
+                 <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3">🔧 Client Actions</h2>
+                 <div class="space-y-3">
+                    <button onclick="renameClient()" id="rename-client-btn" class="w-full bg-gray-500 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-gray-600 transition duration-150 client-dependent-btn">
+                        Rename Client
+                    </button>
+                    
+                    <button onclick="deleteClient()" id="delete-client-btn" class="w-full bg-danger text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150 client-dependent-btn">
+                        Delete Client
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        <div id="content-area-main">
+            </div>
+
+        <div id="content-template" style="display: none;">
+            
+            <div class="flex justify-between items-center mb-6 mt-8">
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    Client: <span id="active-client-display" class="text-primary"></span>
+                </h2>
+            </div>
+            
+            <div class="bg-white p-6 rounded-xl corporate-card-pro">
+                <h3 class="text-xl font-bold text-gray-800 mb-5 border-b border-gray-100 pb-3">📊 Financial Overview</h3>
+                <div id="summary-results">
+                    </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <div class="bg-white p-6 rounded-xl corporate-card-pro">
+                    <h3 class="text-xl font-bold text-primary mb-5 border-b border-primary/20 pb-3">
+                        📅 Task Entry
+                    </h3>
+                    
+                    <div class="space-y-5">
+                        <label class="block text-sm font-medium text-gray-700">Time Duration (Hr:Min:Sec)</label>
+                        <div class="grid grid-cols-3 gap-3">
+                            <input type="number" id="task-hr-input" placeholder="Hr" class="client-dependent-input block w-full rounded-lg border-gray-300 shadow-sm p-3 text-center text-lg font-mono" min="0">
+                            <input type="number" id="task-min-input" placeholder="Min" class="client-dependent-input block w-full rounded-lg border-gray-300 shadow-sm p-3 text-center text-lg font-mono" min="0" max="59">
+                            <input type="number" id="task-sec-input" placeholder="Sec" class="client-dependent-input block w-full rounded-lg border-gray-300 shadow-sm p-3 text-center text-lg font-mono" min="0" max="59">
+                        </div>
+                    </div>
+                    
+                    <button onclick="addTask()" class="client-dependent-btn primary-action-btn mt-6 w-full bg-primary text-white font-extrabold py-3.5 rounded-lg shadow-xl hover:bg-primary-dark transition duration-150">
+                        ADD BILLED TIME
+                    </button>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl corporate-card-pro">
+                    <h3 class="text-xl font-bold text-accent mb-5 border-b border-accent/20 pb-3">
+                        💳 Payment Entry
+                    </h3>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label for="payment-amount-input" class="block text-sm font-medium text-gray-700">Deposit Amount (₹)</label>
+                            <input type="number" id="payment-amount-input" placeholder="₹ 0.00" class="client-dependent-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 text-xl font-extrabold text-accent" min="0">
+                        </div>
+                    </div>
+
+                    <button onclick="addPayment()" class="client-dependent-btn primary-action-btn mt-6 w-full bg-accent text-white font-extrabold py-3.5 rounded-lg shadow-xl hover:bg-emerald-700 transition duration-150">
+                        ADD DEPOSIT
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl corporate-card-pro mt-8">
+                <h3 class="text-xl font-bold text-gray-800 mb-5 border-b border-gray-200 pb-3">⚙️ Billing & Utility Actions</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div class="col-span-1 md:col-span-3">
+                        <label for="hourly-rate-input" class="block text-sm font-medium text-gray-700">Current Hourly Rate (₹)</label>
+                        <input type="number" id="hourly-rate-input" class="client-dependent-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 text-lg font-bold" min="1">
+                    </div>
+                    
+                    <button onclick="updateHourlyRate()" class="client-dependent-btn primary-action-btn bg-primary/80 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-primary-dark transition duration-150">
+                        Update Rate
+                    </button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">🕒 Task History</h3>
+                    <div id="task-list" class="history-list corporate-card-pro">
+                        </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">💵 Payment History</h3>
+                    <div id="payment-list" class="history-list corporate-card-pro">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <script>
+        const LOCAL_STORAGE_KEY = 'local_ledger_data';
+        const DEFAULT_CLIENT_NAME = 'Default Client'; 
+
+        let clientLedgers = {
+            activeClientName: null, 
+            clients: {}
+        };
+        
+        // --- DROPDOWN CONTROL FUNCTIONS ---
+        const toggleDataDropdown = () => {
+            const dropdown = document.getElementById('data-dropdown-menu');
+            dropdown.classList.toggle('visible');
+        };
+
+        const closeDataDropdown = () => {
+            setTimeout(() => {
+                const dropdownContainer = document.getElementById('data-dropdown-container');
+                if (!dropdownContainer.contains(document.activeElement)) {
+                    document.getElementById('data-dropdown-menu').classList.remove('visible');
+                }
+            }, 150);
+        };
+        // ------------------------------------
+
+        // --- DATA LOAD/SAVE FUNCTIONS ---
+        const getOrCreateClientData = (clientName) => {
+            if (!clientLedgers.clients[clientName]) {
+                clientLedgers.clients[clientName] = {
+                    tasks: [],
+                    payments: [],
+                    settings: {
+                        hourlyRate: 150
+                    }
+                };
+            }
+            return clientLedgers.clients[clientName];
+        };
+
+        const loadDataFromLocal = () => {
+            try {
+                const data = localStorage.getItem(LOCAL_STORAGE_KEY);
+                if (data) {
+                    const parsedData = JSON.parse(data);
+                    clientLedgers = {
+                        activeClientName: parsedData.activeClientName || Object.keys(parsedData.clients)[0] || null,
+                        clients: parsedData.clients || {}
+                    };
+                    
+                    if (!clientLedgers.activeClientName && Object.keys(clientLedgers.clients).length > 0) {
+                        clientLedgers.activeClientName = Object.keys(clientLedgers.clients)[0];
+                    }
+
+                } else {
+                    initializeDefaultClient();
+                }
+            } catch (e) {
+                console.error("Error loading data from local storage:", e);
+                initializeDefaultClient();
+            }
+            renderAllClientData();
+        };
+
+        const saveDataToLocal = () => {
+            try {
+                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(clientLedgers));
+            } catch (e) {
+                console.error("Error saving data to local storage:", e);
+            }
+        };
+        
+        const initializeDefaultClient = () => {
+            if (!clientLedgers.clients[DEFAULT_CLIENT_NAME]) {
+                clientLedgers.clients[DEFAULT_CLIENT_NAME] = {
+                    tasks: [],
+                    payments: [],
+                    settings: {
+                        hourlyRate: 150
+                    }
+                };
+            }
+            if (!clientLedgers.activeClientName) {
+                clientLedgers.activeClientName = DEFAULT_CLIENT_NAME;
+            }
+        }
+        
+        // --- BACKUP/RESTORE FUNCTIONS (FINAL IMPLEMENTATION: Data URI Export) ---
+
+        // Helper function to check for common native bridge interfaces
+        const isNativeBridgeAvailable = () => {
+            // Check for native bridges provided by WebIntoApp/WebView setup
+            return (window.Android && typeof window.Android.saveFile === 'function') ||
+                   (window.js_interface && typeof window.js_interface.saveFile === 'function');
+        };
+
+        // Fallback to Data URI download (Most reliable for restricted WebViews)
+        const dataURIFallbackExport = (dataStr, filenamePrefix, successMessage) => {
+            
+            // Convert JSON string to Base64
+            // We use encodeURIComponent and unescape/btoa to handle Unicode characters correctly
+            const dataBase64 = btoa(unescape(encodeURIComponent(dataStr)));
+            
+            // Create the Data URI
+            const dataUri = 'data:application/json;base64,' + dataBase64;
+            
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `${filenamePrefix}_${date}.json`;
+
+            const a = document.createElement('a');
+            a.href = dataUri;
+            a.download = filename;
+            a.target = '_blank'; // Ensures link opens in a new context, forcing download
+            
+            // Append and trigger download
+            document.body.appendChild(a);
+            a.click();
+            
+            // Delay cleanup and alert
+            setTimeout(() => {
+                document.body.removeChild(a);
+                alert(`${successMessage}\n(Download initiated via Data URI fallback)`); 
+            }, 500); 
+        };
+
+        // Attempt to use a Native Bridge (if WebIntoApp Pro configured one)
+        const tryNativeExport = (dataStr, filename) => {
+            try {
+                // Common WebIntoApp/WebView interfaces (Requires WebIntoApp Pro to implement saveFile(String data, String filename) in its native code)
+                if (window.Android && typeof window.Android.saveFile === 'function') {
+                    window.Android.saveFile(dataStr, filename); 
+                    return true;
+                }
+                if (window.js_interface && typeof window.js_interface.saveFile === 'function') {
+                    window.js_interface.saveFile(dataStr, filename);
+                    return true;
+                }
+            } catch(e) {
+                console.error("Native bridge call failed:", e);
+            }
+            return false; // Native bridge was not available or failed
+        };
+
+
+        const promptExportData = () => {
+            closeDataDropdown();
+
+            if (Object.keys(clientLedgers.clients).length === 0) {
+                alert("No client data available to export.");
+                return;
+            }
+
+            const activeClient = clientLedgers.activeClientName;
+            
+            // Ask user which data to export
+            const choice = prompt(
+                `Export data options:\n\nType 'A' for ALL clients' data.\nType 'C' for ONLY the active client's data ("${activeClient}").`
+            );
+
+            if (choice === null) return; // User cancelled prompt
+
+            const selection = choice.toUpperCase();
+            
+            if (selection === 'A' || selection === 'C') {
+                exportData(selection === 'A');
+            } else {
+                alert("Invalid selection. Please type 'A' or 'C'.");
+            }
+        };
+
+        // Master Export function
+        const exportData = (exportAll) => {
+            let dataToExport;
+            let filenamePrefix;
+            let successMessage;
+
+            // 1. Prepare Data
+            if (exportAll) {
+                dataToExport = clientLedgers;
+                filenamePrefix = 'All_Clients_Ledger_Data';
+                successMessage = 'Data for ALL clients successfully exported!';
+            } else {
+                const activeClientName = clientLedgers.activeClientName;
+                if (!activeClientName) {
+                     alert("No active client to export.");
+                     return;
+                }
+                const singleClientLedger = {
+                    activeClientName: activeClientName,
+                    clients: {
+                        [activeClientName]: clientLedgers.clients[activeClientName]
+                    }
+                };
+                dataToExport = singleClientLedger;
+                // Sanitizing filename
+                filenamePrefix = `${activeClientName.replace(/\s/g, '_').replace(/[^a-zA-Z0-9_]/g, '')}_Ledger_Data`;
+                successMessage = `Data for client "${activeClientName}" successfully exported!`;
+            }
+            
+            const dataStr = JSON.stringify(dataToExport, null, 2);
+            const date = new Date().toISOString().split('T')[0];
+            const filename = `${filenamePrefix}_${date}.json`;
+
+            // 2. Try Native Export
+            if (tryNativeExport(dataStr, filename)) {
+                 // If native call succeeds, show alert right away
+                 alert(successMessage);
+                 return;
+            }
+
+            // 3. Fallback to Data URI Download (New, improved method)
+            dataURIFallbackExport(dataStr, filenamePrefix, successMessage);
+        };
+        
+        const importData = (event) => {
+            
+            const file = event.target.files[0];
+            if (!file) {
+                 event.target.value = '';
+                 closeDataDropdown(); 
+                 return;
+            }
+
+            if (!confirm("WARNING: Importing will overwrite ALL current data. Do you wish to continue?")) {
+                event.target.value = '';
+                closeDataDropdown(); 
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.clients) {
+                        clientLedgers = {
+                            activeClientName: importedData.activeClientName || Object.keys(importedData.clients)[0] || null,
+                            clients: importedData.clients
+                        };
+                        saveDataToLocal();
+                        renderAllClientData();
+                        
+                        alert("Data successfully imported! The app has been refreshed."); 
+                        
+                        setTimeout(() => {
+                            closeDataDropdown(); 
+                        }, 10);
+                        
+                    } else {
+                        throw new Error("Invalid file format. The file must contain a 'clients' object.");
+                    }
+                } catch (error) {
+                    alert(`Error importing data: ${error.message}`);
+                    
+                    setTimeout(() => {
+                        closeDataDropdown(); 
+                    }, 10);
+
+                } finally {
+                    event.target.value = '';
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        // --- UTILITY FUNCTIONS ---
+        const decimalHoursToHMS = (decimalHours) => {
+            const totalSeconds = Math.round(decimalHours * 3600);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return `${hours}h ${minutes}m ${seconds}s`;
+        };
+
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount).replace('₹', '₹');
+        };
+
+        const formatDate = (dateString) => {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            const date = new Date(dateString);
+            if (isNaN(date)) {
+                return 'Invalid Date';
+            }
+            return date.toLocaleDateString('en-IN', options); 
+        };
+
+        const setActiveClient = (clientName) => {
+            clientLedgers.activeClientName = clientName;
+            saveDataToLocal();
+            renderAllClientData();
+        };
+        
+        const handleClientSelectionChange = (event) => {
+            setActiveClient(event.target.value);
+        };
+
+        // --- CLIENT MANAGEMENT FUNCTIONS ---
+        const addNewClient = () => {
+            let newClientName = prompt("Enter New Client Name:");
+            if (newClientName && newClientName.trim() !== "") {
+                newClientName = newClientName.trim();
+                if (clientLedgers.clients[newClientName]) {
+                    alert(`Client "${newClientName}" already exists.`);
+                    return;
+                }
+                getOrCreateClientData(newClientName);
+                setActiveClient(newClientName);
+            }
+        };
+        
+        const renameClient = () => {
+            const oldName = clientLedgers.activeClientName;
+            if (!oldName || oldName === DEFAULT_CLIENT_NAME) {
+                alert("Cannot rename the Default Client.");
+                return;
+            }
+            let newName = prompt(`Rename "${oldName}" to:`);
+            if (newName && newName.trim() !== "" && newName.trim() !== oldName) {
+                newName = newName.trim();
+                if (clientLedgers.clients[newName]) {
+                    alert(`Client "${newName}" already exists.`);
+                    return;
+                }
+                
+                clientLedgers.clients[newName] = clientLedgers.clients[oldName];
+                delete clientLedgers.clients[oldName];
+                setActiveClient(newName);
+                alert(`Client renamed to "${newName}".`);
+            }
+        };
+
+        const deleteClient = () => {
+            const clientToDelete = clientLedgers.activeClientName;
+            if (!clientToDelete || clientToDelete === DEFAULT_CLIENT_NAME) {
+                alert("Cannot delete the Default Client.");
+                return;
+            }
+            
+            if (!confirm(`WARNING: Are you sure you want to delete ALL data for client "${clientToDelete}"? This action cannot be undone.`)) {
+                return;
+            }
+
+            delete clientLedgers.clients[clientToDelete];
+
+            const remainingClients = Object.keys(clientLedgers.clients).sort().filter(name => name !== DEFAULT_CLIENT_NAME);
+            
+            if (remainingClients.length > 0) {
+                setActiveClient(remainingClients[0]);
+            } else {
+                initializeDefaultClient();
+                setActiveClient(DEFAULT_CLIENT_NAME);
+            }
+            alert(`Client "${clientToDelete}" and all associated data have been deleted.`);
+            saveDataToLocal();
+            renderAllClientData();
+        };
+
+        // --- ENTRY/UPDATE FUNCTIONS ---
+        const addTask = () => {
+            const hrInput = document.getElementById('task-hr-input');
+            const minInput = document.getElementById('task-min-input');
+            const secInput = document.getElementById('task-sec-input');
+            
+            const hours = parseFloat(hrInput.value) || 0;
+            const minutes = parseFloat(minInput.value) || 0;
+            const seconds = parseFloat(secInput.value) || 0;
+            const date = new Date().toISOString().split('T')[0]; 
+
+            if (hours === 0 && minutes === 0 && seconds === 0) {
+                alert("Please enter at least one value for Hours, Minutes, or Seconds.");
+                return;
+            }
+            
+            const totalDecimalHours = hours + (minutes / 60) + (seconds / 3600);
+            
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            clientData.tasks.push({
+                hours: hours,
+                minutes: minutes,
+                seconds: seconds,
+                decimalHours: totalDecimalHours,
+                date: date,
+                timestamp: Date.now()
+            });
+            
+            hrInput.value = '';
+            minInput.value = '';
+            secInput.value = '';
+
+            saveDataToLocal();
+            renderAllClientData();
+        };
+
+        const addPayment = () => {
+            const amountInput = document.getElementById('payment-amount-input');
+
+            const amount = parseFloat(amountInput.value);
+            const date = new Date().toISOString().split('T')[0];
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid deposit amount.");
+                return;
+            }
+
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            clientData.payments.push({
+                amount: amount,
+                date: date,
+                timestamp: Date.now()
+            });
+
+            amountInput.value = '';
+
+            saveDataToLocal();
+            renderAllClientData();
+        };
+
+        const updateHourlyRate = () => {
+            const rateInput = document.getElementById('hourly-rate-input');
+            const newRate = parseFloat(rateInput.value);
+
+            if (isNaN(newRate) || newRate <= 0) {
+                alert("Please enter a valid Hourly Rate.");
+                return;
+            }
+            
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            clientData.settings.hourlyRate = newRate;
+            
+            saveDataToLocal();
+            renderAllClientData();
+        };
+        
+        const handleDelete = (type, timestampToDelete) => {
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            
+            const listName = type === 'task' ? 'Task' : 'Payment';
+            
+            if (!confirm(`Are you sure you want to delete this ${listName} entry?`)) {
+                return;
+            }
+            
+            if (type === 'task') {
+                clientData.tasks = clientData.tasks.filter(item => item.timestamp !== timestampToDelete);
+            } else {
+                clientData.payments = clientData.payments.filter(item => item.timestamp !== timestampToDelete);
+            }
+
+            saveDataToLocal();
+            renderAllClientData();
+        };
+        
+        // --- RENDERING FUNCTIONS ---
+        const calculateClientSummary = (clientData) => {
+            const totalHours = clientData.tasks.reduce((sum, task) => sum + task.decimalHours, 0);
+            const totalTaskValue = totalHours * clientData.settings.hourlyRate;
+            const totalDeposited = clientData.payments.reduce((sum, payment) => sum + payment.amount, 0);
+            const remainingBalance = totalTaskValue - totalDeposited;
+
+            return {
+                totalHours,
+                totalTaskValue,
+                totalDeposited,
+                remainingBalance
+            };
+        };
+        
+        const renderClientSelector = () => {
+            const selector = document.getElementById('client-selector');
+            const searchInput = document.getElementById('client-search-input');
+            const filterText = searchInput.value.toLowerCase().trim();
+            
+            selector.innerHTML = '';
+            
+            const clientNames = Object.keys(clientLedgers.clients).sort();
+            
+            const filteredClients = clientNames.filter(name => name.toLowerCase().includes(filterText));
+
+            filteredClients.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                if (name === clientLedgers.activeClientName) {
+                    option.selected = true;
+                }
+                selector.appendChild(option);
+            });
+            
+            const renameBtn = document.getElementById('rename-client-btn');
+            const deleteBtn = document.getElementById('delete-client-btn');
+            
+            const activeIsDefault = clientLedgers.activeClientName === DEFAULT_CLIENT_NAME;
+            
+            // Check if active client is selected and there's more than just the default client
+            const isClientSelectedAndNotDefault = clientLedgers.activeClientName && clientLedgers.activeClientName !== DEFAULT_CLIENT_NAME;
+            
+            const isDisabled = !isClientSelectedAndNotDefault; // Rename/Delete should only be allowed for non-default clients
+
+            if (renameBtn) renameBtn.disabled = isDisabled;
+            if (deleteBtn) deleteBtn.disabled = isDisabled;
+
+            if (renameBtn) renameBtn.classList.toggle('client-action-disabled', isDisabled);
+            if (deleteBtn) deleteBtn.classList.toggle('client-action-disabled', isDisabled);
+
+            if (clientLedgers.activeClientName && selector.value !== clientLedgers.activeClientName) {
+                 selector.value = clientLedgers.activeClientName;
+            }
+            
+            // Re-select active client if it was filtered out but still exists
+            if (clientLedgers.activeClientName && !filteredClients.includes(clientLedgers.activeClientName)) {
+                 if (filteredClients.length > 0) {
+                    setActiveClient(filteredClients[0]);
+                 } else if (clientNames.length > 0) {
+                    setActiveClient(clientNames[0]); // Fallback to the first client if filter removes active one
+                 }
+            }
+            
+             // If filter removes all and active client doesn't exist, try to set a new active client
+            if (!clientLedgers.activeClientName && clientNames.length > 0) {
+                 setActiveClient(clientNames[0]);
+            }
+        };
+        
+        const renderSummary = (summary, hourlyRate) => {
+            const summaryEl = document.getElementById('summary-results');
+            
+            const isNegative = summary.remainingBalance < 0;
+            const balanceClass = isNegative 
+                ? 'text-danger bg-red-50 border-danger net-balance-highlight' 
+                : 'text-accent bg-green-50 border-accent net-balance-highlight';
+            const balanceLabel = isNegative ? 'Amount Due' : 'Client Credit';
+            const balanceTextColor = isNegative ? 'text-danger' : 'text-accent';
+
+            summaryEl.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                    <div class="p-4 bg-white rounded-lg corporate-card-pro border border-gray-100">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Hourly Rate</p>
+                        <p class="text-3xl font-extrabold text-primary-dark mt-1">${formatCurrency(hourlyRate)}</p>
+                    </div>
+                    
+                    <div class="p-4 bg-white rounded-lg corporate-card-pro border border-gray-100">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Hours Billed</p>
+                        <p class="text-3xl font-extrabold text-primary-dark mt-1">${decimalHoursToHMS(summary.totalHours)}</p>
+                    </div>
+
+                    <div class="p-4 bg-white rounded-lg corporate-card-pro border border-gray-100">
+                        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Total Billed Value</p>
+                        <p class="text-3xl font-extrabold text-gray-800 mt-1">${formatCurrency(summary.totalTaskValue)}</p>
+                    </div>
+
+                    <div class="p-4 rounded-lg corporate-card-pro border-2 ${balanceClass}">
+                        <p class="text-xs font-semibold ${balanceTextColor} uppercase tracking-wider">
+                            Net Balance
+                        </p>
+                        <p class="text-4xl font-extrabold ${balanceTextColor} mt-1">
+                            ${formatCurrency(Math.abs(summary.remainingBalance))} 
+                        </p>
+                        <p class="text-sm font-semibold ${balanceTextColor} mt-1">
+                            ${balanceLabel}
+                        </p>
+                    </div>
+                </div>
+                <div class="mt-5 p-3 bg-white border border-gray-200 rounded-lg shadow-sm text-center">
+                    <p class="text-sm font-semibold text-gray-600">Total Deposit Received: <span class="text-xl font-bold text-accent">${formatCurrency(summary.totalDeposited)}</span></p>
+                </div>
+            `;
+        };
+
+        const renderTaskList = (tasks, hourlyRate, activeClientName) => {
+            const listEl = document.getElementById('task-list');
+            listEl.innerHTML = '';
+            
+            const sortedTasks = [...tasks].sort((a, b) => b.timestamp - a.timestamp);
+
+            if (sortedTasks.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-gray-500 p-4">No Task entries found.</p>';
+                return;
+            }
+
+            sortedTasks.forEach((task, index) => {
+                const countingNumber = tasks.length - index; 
+                
+                const billedValue = task.decimalHours * hourlyRate;
+
+                const item = document.createElement('div');
+                item.className = 'list-item ledger-entry task-entry flex justify-between items-center p-4 bg-white border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition duration-100';
+                item.innerHTML = `
+                    <div class="flex-grow">
+                        <p class="text-base font-semibold text-gray-800 flex items-center">
+                            <span class="text-primary font-bold mr-3">${countingNumber}.</span>
+                            <span class="font-extrabold text-primary">${activeClientName}</span> 
+                            <span class="text-sm font-semibold text-gray-600 ml-4">
+                                Billed: 
+                                <span class="font-extrabold text-gray-800">${formatCurrency(billedValue)}</span>
+                            </span>
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1 ml-6">
+                            Time: ${task.hours}h ${task.minutes}m ${task.seconds}s • Date: ${formatDate(task.date)}
+                        </p>
+                    </div>
+                    <button onclick="handleDelete('task', ${task.timestamp})" class="text-danger hover:text-red-700 ml-4 p-1 rounded-full transition duration-150" aria-label="Delete Task">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        };
+
+        const renderPaymentList = (payments, hourlyRate, activeClientName) => {
+            const listEl = document.getElementById('payment-list');
+            listEl.innerHTML = '';
+            
+            const sortedPayments = [...payments].sort((a, b) => b.timestamp - a.timestamp);
+
+            if (sortedPayments.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-gray-500 p-4">No Payment entries found.</p>';
+                return;
+            }
+
+            sortedPayments.forEach((payment, index) => {
+                const countingNumber = payments.length - index;
+
+                const item = document.createElement('div');
+                item.className = 'list-item ledger-entry payment-entry flex justify-between items-center p-4 bg-white border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition duration-100';
+                item.innerHTML = `
+                    <div class="flex-grow">
+                         <p class="text-base font-semibold text-gray-800 flex items-center">
+                            <span class="text-primary font-bold mr-3">${countingNumber}.</span>
+                            Amount Received: <span class="font-extrabold text-accent ml-2">${formatCurrency(payment.amount)}</span>
+                        </p>
+                        <p class="text-xs text-gray-500 mt-1 ml-6">
+                            Date: ${formatDate(payment.date)}
+                        </p>
+                    </div>
+                    <button onclick="handleDelete('payment', ${payment.timestamp})" class="text-danger hover:text-red-700 ml-4 p-1 rounded-full transition duration-150" aria-label="Delete Payment">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        };
+        
+        const renderAllClientData = () => {
+            renderClientSelector();
+
+            const activeClientName = clientLedgers.activeClientName;
+            const clientData = activeClientName ? clientLedgers.clients[activeClientName] : null;
+
+            const clientActionsContainer = document.querySelector('.grid.grid-cols-1.lg\\:grid-cols-4.gap-6 > div:last-child');
+            
+            const isClientSelectedAndNotDefault = activeClientName && activeClientName !== DEFAULT_CLIENT_NAME;
+            
+            // Show/Hide Client Actions (Rename/Delete)
+            // Note: Keeping it visible for now to allow Default Client interaction, but buttons are disabled.
+            // if (clientActionsContainer) {
+            //     clientActionsContainer.style.display = isClientSelectedAndNotDefault ? 'flex' : 'none'; 
+            // }
+
+            const contentArea = document.getElementById('content-area-main');
+
+            if (!activeClientName || !clientData) {
+                // Display a prompt if no client data is found (shouldn't happen with default client init)
+                 contentArea.innerHTML = `
+                    <div class="text-center p-10 bg-white rounded-xl corporate-card-pro mt-8">
+                        <h2 class="text-2xl font-bold text-primary mb-3">Welcome to Jar Fanmade!</h2>
+                        <p class="text-gray-600">Please add a new client or select an existing one to begin billing.</p>
+                    </div>
+                 `;
+                return;
+            }
+            
+            contentArea.innerHTML = document.getElementById('content-template').innerHTML;
+            
+            // Enable/Disable inputs and buttons if a client is selected
+            const inputsEnabled = !!activeClientName;
+            document.querySelectorAll('.client-dependent-input').forEach(el => el.disabled = !inputsEnabled);
+            document.querySelectorAll('.client-dependent-btn').forEach(el => el.disabled = !inputsEnabled);
+
+            const summary = calculateClientSummary(clientData);
+            const hourlyRate = clientData.settings.hourlyRate;
+            
+            const activeDisplayEl = document.getElementById('active-client-display');
+            if(activeDisplayEl) {
+                 activeDisplayEl.textContent = activeClientName;
+            }
+            
+            const rateInput = document.getElementById('hourly-rate-input');
+            if(rateInput) {
+                 rateInput.value = hourlyRate;
+            }
+           
+            renderSummary(summary, hourlyRate);
+            renderTaskList(clientData.tasks, hourlyRate, activeClientName);
+            renderPaymentList(clientData.payments, hourlyRate, activeClientName);
+        };
+
+        // Initialize listeners and load data when the window loads
+        window.onload = () => {
+            const clientSelector = document.getElementById('client-selector');
+            const searchInput = document.getElementById('client-search-input');
+            
+            if(clientSelector) {
+                clientSelector.addEventListener('change', handleClientSelectionChange);
+            }
+            if(searchInput) {
+                 searchInput.addEventListener('input', renderClientSelector);
+            }
+           
+            loadDataFromLocal(); 
+        };
+
+    </script>
+</body>
+</html>
