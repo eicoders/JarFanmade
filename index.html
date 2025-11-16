@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jar Fanmade Ledger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- 
+      Automatic Dark/Light Mode Theme System 
+    -->
+    <style>
+        :root {
+            /* Light Mode (Default) */
+            --color-bg: #f9fafb; /* gray-50 */
+            --color-card: #ffffff; /* white */
+            --color-text: #1f2937; /* gray-800 */
+            --color-text-subtle: #6b7280; /* gray-500 */
+            --color-border: #e5e7eb; /* gray-200 */
+            --color-input-bg: #ffffff; /* white */
+            --color-secondary-bg: #f3f4f6; /* gray-100 */
+            --color-secondary-hover-bg: #e5e7eb; /* gray-200 */
+            
+            --color-primary: #4f46e5; /* indigo-600 */
+            --color-primary-dark: #4338ca; /* indigo-700 */
+            --color-accent: #16a34a; /* green-600 */
+            --color-accent-dark: #15803d; /* green-700 */
+            --color-danger: #e11d48; /* rose-600 */
+            --color-danger-dark: #be123c; /* rose-700 */
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                /* Dark Mode */
+                --color-bg: #111827; /* gray-900 */
+                --color-card: #1f293b; /* slate-800 */
+                --color-text: #f1f5f9; /* slate-100 */
+                --color-text-subtle: #94a3b8; /* slate-400 */
+                --color-border: #374151; /* gray-700 */
+                --color-input-bg: #374151; /* gray-700 */
+                --color-secondary-bg: #374151; /* gray-700 */
+                --color-secondary-hover-bg: #4b5563; /* gray-600 */
+
+                --color-primary: #6366f1; /* indigo-500 */
+                --color-primary-dark: #4f46e5; /* indigo-600 */
+                --color-accent: #22c55e; /* green-500 */
+                --color-accent-dark: #16a34a; /* green-600 */
+                --color-danger: #f43f5e; /* rose-500 */
+                --color-danger-dark: #e11d48; /* rose-600 */
+            }
+        }
+
+        /* General Styling */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text-subtle);
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        /* Card Styling */
+        .corporate-card-pro {
+            background-color: var(--color-card);
+            border: 1px solid var(--color-border);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            transition: all 0.2s ease;
+        }
+        
+        @media (min-width: 1024px) {
+            .corporate-card-pro:hover {
+                 border-color: var(--color-primary);
+                 transform: translateY(-2px);
+                 box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+            }
+        }
+
+        /* Input/Select Styling */
+        input, select {
+            background-color: var(--color-input-bg);
+            border: 1px solid var(--color-border);
+            color: var(--color-text);
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            transition: all 0.2s ease;
+        }
+        input:focus, select:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 2px var(--color-primary);
+            outline: none;
+        }
+        select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='currentColor' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+            color: var(--color-text);
+        }
+        
+        /* Placeholder styling */
+        ::placeholder {
+            color: var(--color-text-subtle);
+            opacity: 0.7;
+        }
+        
+        /* ▼▼▼ SCROLL FIX ▼▼▼ */
+        /* This enables the internal scroll on the lists */
+        .history-list {
+            max-height: 400px; /* Lists will be max 400px tall */
+            overflow-y: auto;  /* Show scrollbar only when needed */
+        }
+        
+        /* Scrollbar Styling */
+        .history-list::-webkit-scrollbar { width: 8px; }
+        .history-list::-webkit-scrollbar-track { background: var(--color-bg); }
+        .history-list::-webkit-scrollbar-thumb {
+            background-color: var(--color-border);
+            border-radius: 4px;
+        }
+        .history-list::-webkit-scrollbar-thumb:hover {
+            background-color: var(--color-text-subtle);
+        }
+        
+        /* Secondary Button */
+        .secondary-action-btn {
+            background-color: var(--color-secondary-bg);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+        .secondary-action-btn:hover:not(:disabled) {
+            background-color: var(--color-secondary-hover-bg);
+        }
+        
+        /* Disabled Button */
+        .client-action-disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(50%);
+        }
+
+        /* Search input icon */
+        .search-input-container { position: relative; }
+        .search-input-container input { padding-left: 2.5rem; }
+        .search-icon {
+            position: absolute;
+            top: 50%;
+            left: 0.75rem;
+            transform: translateY(-50%);
+            color: var(--color-text-subtle);
+        }
+    </style>
+    
+    <!-- 
+      Tailwind Config
+      Yeh upar diye gaye CSS variables ko Tailwind classes se jodta hai.
+    -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bg-base': 'var(--color-bg)',
+                        'card-base': 'var(--color-card)',
+                        'text-base': 'var(--color-text)',
+                        'text-subtle': 'var(--color-text-subtle)',
+                        'border-base': 'var(--color-border)',
+                        'input-base': 'var(--color-input-bg)',
+                        'secondary-base': 'var(--color-secondary-bg)',
+                        'secondary-hover': 'var(--color-secondary-hover-bg)',
+                        
+                        'primary': 'var(--color-primary)',
+                        'primary-dark': 'var(--color-primary-dark)',
+                        'accent': 'var(--color-accent)',
+                        'accent-dark': 'var(--color-accent-dark)',
+                        'danger': 'var(--color-danger)',
+                        'danger-dark': 'var(--color-danger-dark)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-bg-base text-text-subtle p-4 sm:p-6 md:p-10">
+    
+    <div id="app" class="max-w-7xl mx-auto space-y-8">
+        
+        <!-- HEADER -->
+        <header class="flex justify-between items-center pb-6 border-b border-border-base">
+            <h1 class="text-3xl font-bold text-text-base tracking-tight">
+                Jar Fanmade
+            </h1>
+            <!-- User Button -->
+            <button class="w-12 h-12 bg-card-base border border-border-base rounded-full flex items-center justify-center shadow-sm hover:shadow-md hover:border-primary transition-all duration-200" aria-label="User Profile">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- TOP ROW: CLIENT MANAGEMENT (Responsive 3-col) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            <!-- Client Selector Card -->
+            <div class="lg:col-span-1 bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro">
+                <h2 class="text-xl font-bold text-text-base mb-4 border-b border-border-base pb-3">🔍 Select Active Client</h2>
+                
+                <label for="client-search-input" class="block text-sm font-medium text-text-subtle mb-1">Search/Filter Client</label>
+                <div class="search-input-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 search-icon" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                    </svg>
+                    <input type="text" id="client-search-input" placeholder="Type name to search..." class="mb-4 block w-full rounded-lg p-3 transition duration-150">
+                </div>
+                
+                <label for="client-selector" class="block text-sm font-medium text-text-subtle mb-1">Active Client</label>
+                <select id="client-selector" class="block w-full rounded-lg p-3 font-semibold transition duration-150"></select>
+            </div>
+            
+            <!-- New Client Card -->
+            <div class="bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro flex flex-col justify-between">
+                 <h2 class="text-xl font-bold text-primary mb-4 border-b border-primary/20 pb-3">➕ New Client Setup</h2>
+                 <p class="text-sm text-text-subtle mb-4">Create a new ledger and set a default hourly rate for a new client.</p>
+                 <button onclick="addNewClient()" class="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:bg-primary-dark transition duration-150 primary-action-btn">
+                    + Add New Client
+                </button>
+            </div>
+
+            <!-- Client Actions Card -->
+            <div id="client-actions-card" class="bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro flex flex-col justify-between">
+                 <h2 class="text-xl font-bold text-text-base mb-4 border-b border-border-base pb-3">🔧 Client Actions</h2>
+                 <div class="space-y-3">
+                    <button onclick="renameClient()" id="rename-client-btn" class="w-full bg-gray-500 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-gray-600 transition duration-150 client-dependent-btn">
+                        Rename Client
+                    </button>
+                    <button onclick="deleteClient()" id="delete-client-btn" class="w-full bg-danger text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-danger-dark transition duration-150 client-dependent-btn">
+                        Delete Client
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MAIN CONTENT AREA -->
+        <div id="content-area-main-structure">
+            
+            <!-- This section is hidden until a client is selected -->
+            <div id="content-display-header" style="display: none;">
+                
+                <div class="flex justify-between items-center mb-6 mt-8">
+                    <h2 class="text-3xl font-bold text-text-base">
+                        Client: <span id="active-client-display" class="text-primary"></span>
+                    </h2>
+                </div>
+                
+                <!-- Financial Overview Card -->
+                <div class="bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro">
+                    <h3 class="text-2xl font-bold text-text-base mb-5 border-b border-border-base pb-3">📊 Financial Overview</h3>
+                    <div id="summary-results">
+                        <!-- Summary rendered by JS -->
+                    </div>
+                </div>
+
+                <!-- Task & Payment Entry (Responsive 2-col) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro">
+                        <h3 class="text-2xl font-bold text-text-base mb-5 border-b border-primary/20 pb-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            Task Entry
+                        </h3>
+                        <div class="space-y-5">
+                            <label class="block text-sm font-medium text-text-subtle">Time Duration (Hr:Min:Sec)</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <input type="number" id="task-hr-input" placeholder="Hr" class="client-dependent-input block w-full rounded-lg p-3 text-center text-lg font-mono" min="0">
+                                <input type="number" id="task-min-input" placeholder="Min" class="client-dependent-input block w-full rounded-lg p-3 text-center text-lg font-mono" min="0" max="59">
+                                <input type="number" id="task-sec-input" placeholder="Sec" class="client-dependent-input block w-full rounded-lg p-3 text-center text-lg font-mono" min="0" max="59">
+                            </div>
+                        </div>
+                        <button onclick="addTask()" class="client-dependent-btn primary-action-btn mt-6 w-full bg-primary text-white font-extrabold py-3.5 rounded-lg shadow-xl hover:bg-primary-dark transition duration-150">
+                            ADD BILLED TIME
+                        </button>
+                    </div>
+                    
+                    <div class="bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro">
+                        <h3 class="text-2xl font-bold text-text-base mb-5 border-b border-accent/20 pb-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                            Payment Entry
+                        </h3>
+                        <div class="space-y-5">
+                            <div>
+                                <label for="payment-amount-input" class="block text-sm font-medium text-text-subtle">Deposit Amount (₹)</label>
+                                <input type="number" id="payment-amount-input" placeholder="₹ 0.00" class="client-dependent-input mt-1 block w-full rounded-lg p-3 text-xl font-extrabold text-accent" min="0">
+                            </div>
+                        </div>
+                        <button onclick="addPayment()" class="client-dependent-btn primary-action-btn mt-6 w-full bg-accent text-white font-extrabold py-3.5 rounded-lg shadow-xl hover:bg-accent-dark transition duration-150">
+                            ADD DEPOSIT
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Billing Actions Card -->
+                <div class="bg-card-base p-6 rounded-xl shadow-lg corporate-card-pro mt-6">
+                    <h3 class="text-2xl font-bold text-text-base mb-5 border-b border-border-base pb-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924-1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0 -3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        ⚙️ Billing & Utility Actions
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+                        <div class="col-span-1 sm:col-span-3">
+                            <label for="hourly-rate-input" class="block text-sm font-medium text-text-subtle">Current Hourly Rate (₹)</label>
+                            <input type="number" id="hourly-rate-input" class="client-dependent-input mt-1 block w-full rounded-lg p-3 text-lg font-bold" min="1">
+                        </div>
+                        <button onclick="updateHourlyRate()" class="client-dependent-btn secondary-action-btn w-full py-3 px-4 rounded-lg shadow-sm transition duration-150 font-semibold">
+                            Update Rate
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- History Lists (Responsive 2-col) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div>
+                        <h3 class="text-2xl font-bold text-text-base mb-3 flex items-center">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            🕒 Task History
+                        </h3>
+                        <div id="task-list" class="history-list bg-card-base rounded-xl border border-border-base">
+                            <!-- Task list rendered by JS -->
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-text-base mb-3 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" /></svg>
+                            💵 Payment History
+                        </h3>
+                        <div id="payment-list" class="history-list bg-card-base rounded-xl border border-border-base">
+                            <!-- Payment list rendered by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- LOADING / WELCOME STATE -->
+            <div id="loading-state" class="text-center p-10 sm:p-16 bg-card-base rounded-xl shadow-lg corporate-card-pro mt-6">
+                <h2 class="text-2xl font-bold text-primary mb-3">Loading Data...</h2>
+                <p class="text-text-subtle">Please wait while the application connects to the cloud database.</p>
+             </div>
+        </div>
+
+    </div>
+    
+    <!-- FIREBASE SCRIPT -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script> 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <!-- APP SCRIPT -->
+    <script>
+        // ⚠️ Yahaan apni Firebase configuration details bharein ⚠️
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY", // <-- Apni API Key yahaan daalein
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            databaseURL: "https://jar-ledger-default-rtdb.asia-southeast1.firebasedatabase.app", // <-- Ise apni Firebase DB URL se badlein
+            projectId: "YOUR_PROJECT_ID",
+        };
+
+        let database;
+        let clientLedgersRef;
+        const DEFAULT_CLIENT_NAME = 'Default Client'; 
+        let clientLedgers = {
+            activeClientName: null, 
+            clients: {}
+        };
+        let isFirebaseReady = false;
+
+        try {
+             firebase.initializeApp(firebaseConfig);
+             database = firebase.database();
+             clientLedgersRef = database.ref('clientLedgers'); 
+             isFirebaseReady = true;
+        } catch (e) {
+             console.error("Firebase Initialization Error:", e);
+             document.getElementById('loading-state').innerHTML = `<h2 class="text-2xl font-bold text-danger mb-3">ERROR: Firebase Initialization Failed!</h2><p class="text-text-subtle">Check your configuration details in the code console.</p>`;
+        }
+        
+        // --- DATA SYNC FUNCTIONS ---
+        
+        const saveDataToCloud = () => {
+             if (!clientLedgersRef || !isFirebaseReady) return; 
+             clientLedgersRef.set(clientLedgers)
+                 .catch((error) => {
+                     console.error("Error saving data to Firebase:", error);
+                 });
+        };
+        
+        const initializeDefaultClient = () => {
+            let needsUpdate = false;
+            if (!clientLedgers.clients) {
+                clientLedgers.clients = {}; 
+            }
+            if (clientLedgers.clients.null) {
+                delete clientLedgers.clients.null;
+                needsUpdate = true;
+            }
+            if (clientLedgers.clients[DEFAULT_CLIENT_NAME]) {
+                delete clientLedgers.clients[DEFAULT_CLIENT_NAME];
+                needsUpdate = true;
+            }
+            
+            const realClientNames = Object.keys(clientLedgers.clients).sort();
+            const activeClientIsValid = clientLedgers.activeClientName === DEFAULT_CLIENT_NAME || clientLedgers.clients[clientLedgers.activeClientName];
+
+            if (!activeClientIsValid) {
+                if (realClientNames.length > 0) {
+                    clientLedgers.activeClientName = realClientNames[0];
+                } else {
+                    clientLedgers.activeClientName = DEFAULT_CLIENT_NAME;
+                }
+                needsUpdate = true;
+            }
+            
+            if (!clientLedgers.activeClientName) {
+                 clientLedgers.activeClientName = DEFAULT_CLIENT_NAME;
+                 needsUpdate = true;
+            }
+            if (needsUpdate) {
+                saveDataToCloud();
+            }
+        };
+
+        const startRealtimeListener = () => {
+             if (!clientLedgersRef || !isFirebaseReady) return; 
+             clientLedgersRef.on('value', (snapshot) => {
+                 const data = snapshot.val();
+                 if (data) {
+                     clientLedgers.clients = data.clients || {};
+                     clientLedgers.activeClientName = data.activeClientName || null;
+                 } else {
+                     clientLedgers.clients = {};
+                     clientLedgers.activeClientName = null;
+                 }
+                 initializeDefaultClient(); 
+                 renderAllClientData(); 
+             }, (error) => {
+                 console.error("Firebase Read Failed:", error);
+                 document.getElementById('loading-state').innerHTML = `<h2 class="text-2xl font-bold text-danger mb-3">ERROR: Failed to load data!</h2><p class="text-text-subtle">Please check your Firebase Rules (must allow read) or network connection.</p>`;
+             });
+        };
+        
+        // --- UTILITY FUNCTIONS ---
+        
+        const getOrCreateClientData = (clientName) => {
+            if (!clientLedgers.clients[clientName]) {
+                clientLedgers.clients[clientName] = {
+                    tasks: [],
+                    payments: [],
+                    settings: { hourlyRate: 150 }
+                };
+            }
+            return clientLedgers.clients[clientName];
+        };
+        
+        const decimalHoursToHMS = (decimalHours) => {
+            const totalSeconds = Math.round(decimalHours * 3600);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return `${hours}h ${minutes}m ${seconds}s`;
+        };
+
+        const formatCurrency = (amount) => {
+            return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 2 }).format(amount).replace('₹', '₹');
+        };
+
+        const formatDate = (dateString) => {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            const date = new Date(dateString);
+            return isNaN(date) ? 'Invalid Date' : date.toLocaleDateString('en-IN', options); 
+        };
+
+        const setActiveClient = (clientName) => {
+            clientLedgers.activeClientName = clientName;
+            saveDataToCloud(); 
+        };
+        
+        const handleClientSelectionChange = (event) => {
+            setActiveClient(event.target.value);
+        };
+
+        // --- CLIENT MANAGEMENT FUNCTIONS (Alerts removed for better UX) ---
+        const addNewClient = () => {
+            let newClientName = prompt("Enter New Client Name:");
+            if (newClientName && newClientName.trim() !== "") {
+                newClientName = newClientName.trim();
+                if (clientLedgers.clients[newClientName]) {
+                    console.warn(`Client "${newClientName}" already exists.`);
+                    return;
+                }
+                if (newClientName === DEFAULT_CLIENT_NAME) {
+                    console.warn("This name is reserved. Please choose another name.");
+                    return;
+                }
+                getOrCreateClientData(newClientName); 
+                setActiveClient(newClientName); 
+            }
+        };
+        
+        const renameClient = () => {
+            const oldName = clientLedgers.activeClientName;
+            if (!oldName || oldName === DEFAULT_CLIENT_NAME) {
+                console.warn("Cannot rename the Default Client.");
+                return;
+            }
+            let newName = prompt(`Rename "${oldName}" to:`);
+            if (newName && newName.trim() !== "" && newName.trim() !== oldName) {
+                newName = newName.trim();
+                if (clientLedgers.clients[newName]) {
+                    console.warn(`Client "${newName}" already exists.`);
+                    return;
+                }
+                if (newName === DEFAULT_CLIENT_NAME) {
+                    console.warn("This name is reserved. Please choose another name.");
+                    return;
+                }
+                clientLedgers.clients[newName] = clientLedgers.clients[oldName];
+                delete clientLedgers.clients[oldName];
+                setActiveClient(newName); 
+            }
+        };
+
+        const deleteClient = () => {
+            const clientToDelete = clientLedgers.activeClientName;
+            if (!clientToDelete || clientToDelete === DEFAULT_CLIENT_NAME) {
+                console.warn("Cannot delete the Default Client.");
+                return;
+            }
+            if (!confirm(`WARNING: Are you sure you want to delete ALL data for client "${clientToDelete}"? This action cannot be undone.`)) {
+                return;
+            }
+            delete clientLedgers.clients[clientToDelete]; 
+            const remainingClients = Object.keys(clientLedgers.clients).sort();
+            clientLedgers.activeClientName = remainingClients.length > 0 ? remainingClients[0] : DEFAULT_CLIENT_NAME;
+            saveDataToCloud(); 
+        };
+
+        // --- ENTRY/UPDATE FUNCTIONS (Alerts removed) ---
+        const addTask = () => {
+            const hrInput = document.getElementById('task-hr-input');
+            const minInput = document.getElementById('task-min-input');
+            const secInput = document.getElementById('task-sec-input');
+            
+            const hours = parseFloat(hrInput.value) || 0;
+            const minutes = parseFloat(minInput.value) || 0;
+            const seconds = parseFloat(secInput.value) || 0;
+
+            if (hours === 0 && minutes === 0 && seconds === 0) {
+                console.warn("Please enter a time duration.");
+                return;
+            }
+            
+            const totalDecimalHours = hours + (minutes / 60) + (seconds / 3600);
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            if (!Array.isArray(clientData.tasks)) clientData.tasks = Object.values(clientData.tasks || {});
+            
+            clientData.tasks.push({
+                hours, minutes, seconds, totalDecimalHours,
+                date: new Date().toISOString().split('T')[0], 
+                timestamp: Date.now()
+            });
+            
+            hrInput.value = ''; minInput.value = ''; secInput.value = '';
+            saveDataToCloud(); 
+        };
+
+        const addPayment = () => {
+            const amountInput = document.getElementById('payment-amount-input');
+            const amount = parseFloat(amountInput.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                console.warn("Please enter a valid deposit amount.");
+                return;
+            }
+
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            if (!Array.isArray(clientData.payments)) clientData.payments = Object.values(clientData.payments || {});
+
+            clientData.payments.push({
+                amount,
+                date: new Date().toISOString().split('T')[0],
+                timestamp: Date.now()
+            });
+
+            amountInput.value = '';
+            saveDataToCloud(); 
+        };
+
+        const updateHourlyRate = () => {
+            const rateInput = document.getElementById('hourly-rate-input');
+            const newRate = parseFloat(rateInput.value);
+
+            if (isNaN(newRate) || newRate <= 0) {
+                console.warn("Please enter a valid Hourly Rate.");
+                return;
+            }
+            
+            getOrCreateClientData(clientLedgers.activeClientName).settings.hourlyRate = newRate;
+            saveDataToCloud(); 
+        };
+        
+        const handleDelete = (type, timestampToDelete) => {
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            const listName = type === 'task' ? 'Task' : 'Payment';
+            
+            if (!confirm(`Are you sure you want to delete this ${listName} entry?`)) {
+                return;
+            }
+            
+            if (type === 'task') {
+                if (!Array.isArray(clientData.tasks)) clientData.tasks = Object.values(clientData.tasks || {});
+                clientData.tasks = clientData.tasks.filter(item => item.timestamp !== timestampToDelete);
+            } else {
+                if (!Array.isArray(clientData.payments)) clientData.payments = Object.values(clientData.payments || {});
+                clientData.payments = clientData.payments.filter(item => item.timestamp !== timestampToDelete);
+            }
+            saveDataToCloud(); 
+        };
+        
+        // --- RENDERING FUNCTIONS (Updated with new classes) ---
+        
+        const calculateClientSummary = (clientData) => {
+            const tasksArray = Array.isArray(clientData.tasks) ? clientData.tasks : Object.values(clientData.tasks || {});
+            const paymentsArray = Array.isArray(clientData.payments) ? clientData.payments : Object.values(clientData.payments || {});
+            const hourlyRate = clientData.settings?.hourlyRate || 150;
+
+            const totalHours = tasksArray.reduce((sum, task) => sum + (task.totalDecimalHours || 0), 0);
+            const totalTaskValue = totalHours * hourlyRate; 
+            const totalDeposited = paymentsArray.reduce((sum, payment) => sum + (payment.amount || 0), 0);
+            const remainingBalance = totalTaskValue - totalDeposited;
+
+            return { totalHours, totalTaskValue, totalDeposited, remainingBalance, hourlyRate };
+        };
+        
+        const renderClientSelector = () => {
+            const selector = document.getElementById('client-selector');
+            const searchInput = document.getElementById('client-search-input');
+            const filterText = searchInput.value.toLowerCase().trim();
+            
+            selector.innerHTML = '';
+            const realClientNames = Object.keys(clientLedgers.clients).sort();
+            const allDisplayableClients = [DEFAULT_CLIENT_NAME, ...realClientNames];
+            const filteredClients = allDisplayableClients.filter(name => name.toLowerCase().includes(filterText));
+
+            if (filteredClients.length === 0 && filterText.length > 0) {
+                 selector.innerHTML = `<option disabled>No clients found...</option>`;
+            } else {
+                filteredClients.forEach(name => {
+                    const option = document.createElement('option');
+                    option.value = name;
+                    option.textContent = name;
+                    if (name === clientLedgers.activeClientName) {
+                        option.selected = true;
+                    }
+                    selector.appendChild(option);
+                });
+            }
+            
+            const isClientSelectedAndNotDefault = clientLedgers.activeClientName && clientLedgers.activeClientName !== DEFAULT_CLIENT_NAME;
+            const isDisabled = !isClientSelectedAndNotDefault;
+            
+            ['rename-client-btn', 'delete-client-btn'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    btn.disabled = isDisabled;
+                    btn.classList.toggle('client-action-disabled', isDisabled);
+                }
+            });
+            
+            if (clientLedgers.activeClientName && selector.value !== clientLedgers.activeClientName) {
+                 selector.value = clientLedgers.activeClientName;
+            }
+        };
+        
+        const renderSummary = (summary) => {
+            const summaryEl = document.getElementById('summary-results');
+            const isNegative = summary.remainingBalance < 0;
+            const balanceClass = isNegative 
+                ? 'text-danger bg-danger/10 border-danger' 
+                : 'text-accent bg-accent/10 border-accent';
+            const balanceLabel = isNegative ? 'Amount Due' : 'Client Credit';
+            const balanceTextColor = isNegative ? 'text-danger' : 'text-accent';
+
+            summaryEl.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
+                    <div class="p-4 bg-bg-base sm:bg-card-base rounded-lg corporate-card-pro border border-border-base">
+                        <p class="text-xs font-semibold text-text-subtle uppercase tracking-wider">Hourly Rate</p>
+                        <p class="text-3xl font-extrabold text-primary mt-1">${formatCurrency(summary.hourlyRate)}</p>
+                    </div>
+                    <div class="p-4 bg-bg-base sm:bg-card-base rounded-lg corporate-card-pro border border-border-base">
+                        <p class="text-xs font-semibold text-text-subtle uppercase tracking-wider">Total Hours Billed</p>
+                        <p class="text-3xl font-extrabold text-text-base mt-1">${decimalHoursToHMS(summary.totalHours)}</p>
+                    </div>
+                    <div class="p-4 bg-bg-base sm:bg-card-base rounded-lg corporate-card-pro border border-border-base">
+                        <p class="text-xs font-semibold text-text-subtle uppercase tracking-wider">Total Billed Value</p>
+                        <p class="text-3xl font-extrabold text-text-base mt-1">${formatCurrency(summary.totalTaskValue)}</p>
+                    </div>
+                    <div class="p-4 rounded-lg corporate-card-pro border-2 ${balanceClass} md:col-span-2 lg:col-span-1">
+                        <p class="text-xs font-semibold ${balanceTextColor} uppercase tracking-wider">Net Balance</p>
+                        <p class="text-4xl font-extrabold ${balanceTextColor} mt-1">
+                            ${formatCurrency(Math.abs(summary.remainingBalance))} 
+                        </p>
+                        <p class="text-sm font-semibold ${balanceTextColor} mt-1">${balanceLabel}</p>
+                    </div>
+                </div>
+                <div class="mt-5 p-3 bg-bg-base sm:bg-card-base border border-border-base rounded-lg shadow-sm text-center">
+                    <p class="text-sm font-semibold text-text-subtle">Total Deposit Received: <span class="text-xl font-bold text-accent">${formatCurrency(summary.totalDeposited)}</span></p>
+                </div>
+            `;
+        };
+
+        const renderTaskList = (tasks, hourlyRate, activeClientName) => {
+            const listEl = document.getElementById('task-list');
+            listEl.innerHTML = '';
+            const taskArray = (Array.isArray(tasks) ? tasks : Object.values(tasks || [])).sort((a, b) => b.timestamp - a.timestamp);
+
+            if (taskArray.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-text-subtle p-4">No Task entries found.</p>';
+                return;
+            }
+
+             taskArray.forEach((task, index) => {
+                const countingNumber = taskArray.length - index; 
+                const billedValue = (task.totalDecimalHours || 0) * hourlyRate;
+                const timeString = `${task.hours || 0}h ${task.minutes || 0}m ${task.seconds || 0}s`;
+                
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-4 border-b border-border-base last:border-b-0 hover:bg-bg-base transition duration-100';
+                item.innerHTML = `
+                    <div class="flex-grow">
+                        <p class="text-base font-semibold text-text-base flex flex-wrap items-center">
+                            <span class="text-primary font-bold mr-3">${countingNumber}.</span>
+                            <span class="font-bold text-primary mr-3">${activeClientName}</span> 
+                            <span class="text-sm font-semibold text-text-subtle">
+                                Billed: <span class="font-bold text-text-base">${formatCurrency(billedValue)}</span>
+                            </span>
+                        </p>
+                        <p class="text-xs text-text-subtle mt-1 ml-6">
+                            Time: ${timeString} • Date: ${formatDate(task.date)}
+                        </p>
+                    </div>
+                    <button onclick="handleDelete('task', ${task.timestamp})" class="text-danger hover:text-danger-dark ml-4 p-1 rounded-full transition duration-150" aria-label="Delete Task">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        };
+
+        const renderPaymentList = (payments) => {
+            const listEl = document.getElementById('payment-list');
+            listEl.innerHTML = '';
+            const paymentArray = (Array.isArray(payments) ? payments : Object.values(payments || [])).sort((a, b) => b.timestamp - a.timestamp);
+
+            if (paymentArray.length === 0) {
+                listEl.innerHTML = '<p class="text-center text-text-subtle p-4">No Payment entries found.</p>';
+                return;
+            }
+
+            paymentArray.forEach((payment, index) => {
+                const countingNumber = paymentArray.length - index;
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center p-4 border-b border-border-base last:border-b-0 hover:bg-bg-base transition duration-100';
+                item.innerHTML = `
+                    <div class="flex-grow">
+                         <p class="text-base font-semibold text-text-base flex items-center">
+                            <span class="text-primary font-bold mr-3">${countingNumber}.</span>
+                            Amount Received: <span class="font-bold text-accent ml-2">${formatCurrency(payment.amount)}</span>
+                        </p>
+                        <p class="text-xs text-text-subtle mt-1 ml-6">
+                            Date: ${formatDate(payment.date)}
+                        </p>
+                    </div>
+                    <button onclick="handleDelete('payment', ${payment.timestamp})" class="text-danger hover:text-danger-dark ml-4 p-1 rounded-full transition duration-150" aria-label="Delete Payment">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                `;
+                listEl.appendChild(item);
+            });
+        };
+        
+        const renderAllClientData = () => {
+            const contentHeader = document.getElementById('content-display-header');
+            const loadingState = document.getElementById('loading-state');
+            const clientActionsCard = document.getElementById('client-actions-card'); 
+            const activeClientName = clientLedgers.activeClientName;
+            const clientData = (activeClientName && activeClientName !== DEFAULT_CLIENT_NAME) 
+                                ? clientLedgers.clients[activeClientName] 
+                                : null;
+
+            renderClientSelector();
+            
+            if (activeClientName === DEFAULT_CLIENT_NAME) {
+                if (clientActionsCard) clientActionsCard.style.display = 'none';
+                contentHeader.style.display = 'none';
+                loadingState.style.display = 'block';
+                loadingState.innerHTML = `<h2 class="text-2xl font-bold text-primary mb-3">Welcome!</h2><p class="text-text-subtle">Please click '+ Add New Client' above to get started.</p>`;
+                return; 
+            }
+            
+            if (!clientData) {
+                 contentHeader.style.display = 'none';
+                 if (clientActionsCard) clientActionsCard.style.display = 'none'; 
+                 loadingState.style.display = 'block';
+                 loadingState.innerHTML = `<h2 class="text-2xl font-bold text-primary mb-3">Loading Data...</h2><p class="text-text-subtle">Please wait while the application connects to the cloud database.</p>`;
+                 return;
+            }
+            
+            if (clientActionsCard) clientActionsCard.style.display = 'flex'; 
+            contentHeader.style.display = 'block';
+            loadingState.style.display = 'none';
+            
+            document.querySelectorAll('.client-dependent-input, .client-dependent-btn').forEach(el => el.disabled = false);
+
+            const summary = calculateClientSummary(clientData);
+            
+            document.getElementById('active-client-display').textContent = activeClientName;
+            document.getElementById('hourly-rate-input').value = summary.hourlyRate;
+           
+            renderSummary(summary);
+            renderTaskList(clientData.tasks, summary.hourlyRate, activeClientName);
+            renderPaymentList(clientData.payments);
+        };
+
+        // Initialize listeners
+        window.onload = () => {
+            document.getElementById('client-selector').addEventListener('change', handleClientSelectionChange);
+            document.getElementById('client-search-input').addEventListener('input', renderClientSelector);
+            if (isFirebaseReady) {
+                startRealtimeListener(); 
+            }
+        };
+
+    </script>
+</body>
+</html>
+
+
