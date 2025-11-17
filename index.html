@@ -297,8 +297,8 @@
 
     let database;
     let auth;
-    let clientLedgersRef = null;
-    let currentUserId = null;
+    //let clientLedgersRef = null;
+    //let currentUserId = null;
     let isLoginMode = true;
 
     const DEFAULT_CLIENT_NAME = 'Default Client';
@@ -419,7 +419,21 @@
     auth.signInWithRedirect(provider);
 };
 
-    const logout = () => { toggleProfileDropdown(); auth.signOut().catch(error => console.error("Logout Error:", error)); };
+    const logout = () => {
+    // 1. Dropdown band karo
+    toggleProfileDropdown();
+
+    // 2. Agar Android App mein hain, toh wahan ki cookies saaf karo
+    if (window.AndroidApp && window.AndroidApp.clearAppCookies) {
+        window.AndroidApp.clearAppCookies();
+    }
+
+    // 3. Firebase se logout karo
+    auth.signOut().then(() => {
+        // 4. Reload karo taaki Google ka purana session puri tarah hat jaye
+        location.reload();
+    }).catch(error => console.error("Logout Error:", error));
+};
 
     // --- HELPER ---
     const updateCardVisibility = () => {
