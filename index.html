@@ -50,6 +50,21 @@
     </script>
 
     <style>
+        /* Ye code pure app me text selection band kar dega */
+body {
+    -webkit-user-select: none; /* Chrome/Safari/Android */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE */
+    user-select: none;         /* Standard */
+    -webkit-touch-callout: none; /* iOS Menu disable */
+}
+
+/* Zaroori: Input boxes me typing allow honi chahiye */
+input, textarea {
+    -webkit-user-select: text !important;
+    user-select: text !important;
+}
+        
         body { font-family: 'Inter', sans-serif; }
         .history-list { max-height: 400px; overflow-y: auto; border-radius: 0.5rem; }
         .corporate-card-pro { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05); }
