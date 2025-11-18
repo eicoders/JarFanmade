@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="theme-color" id="meta-theme-color" content="#ffffff">
+
+    <title>Jar Fanmade - Secure Ledger</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0078D4',
+                        'primary-light': '#31A1E0',
+                        'secondary': '#f3f4f6',
+                        'accent': '#107c10',
+                        'accent-light': '#18b518',
+                        'danger': '#dc2626',
+                        'background-light': '#f8f9fa',
+                        'primary-dark': '#005a9e',
+                        'black-text': '#111827',
+                        'border-gray': '#e5e7eb',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+
+    <script>
+        (function() {
+            function syncThemeWithSystem() {
+                const metaTag = document.getElementById('meta-theme-color');
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.documentElement.classList.add('dark');
+                    if(metaTag) metaTag.setAttribute('content', '#1A1D21');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    if(metaTag) metaTag.setAttribute('content', '#ffffff');
+                }
+            }
+            window.addEventListener('DOMContentLoaded', syncThemeWithSystem);
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncThemeWithSystem);
+        })();
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .history-list { max-height: 400px; overflow-y: auto; border-radius: 0.5rem; }
+        .corporate-card-pro { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        .circular-button { width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0; box-shadow: 0 6px 10px -1px rgba(0, 0, 0, 0.15); }
+        
+        /* --- AUTH MODAL STYLES --- */
+        #auth-modal-backdrop { position: fixed; inset: 0; background-color: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 50; padding: 1rem; backdrop-filter: blur(4px); }
+        #auth-container { max-height: 90vh; overflow-y: auto; transition: height 0.3s ease; }
+        
+        /* Custom Inputs for Auth */
+        .auth-input-group { margin-bottom: 16px; position: relative; }
+        .auth-input-wrapper { position: relative; }
+        .auth-input-wrapper input {
+            width: 100%; padding: 12px 15px; padding-right: 40px;
+            border: 1px solid #e5e7eb; border-radius: 8px;
+            font-size: 14px; outline: none; transition: 0.2s;
+            background-color: white; color: #1f2937;
+        }
+        .dark .auth-input-wrapper input { background-color: #3A404A; border-color: #4A505A; color: #EAEAEA; }
+        
+        .auth-input-wrapper input:focus { border-color: #0078D4; box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15); }
+        
+        /* Validation Colors */
+        .auth-input-wrapper input.valid { border-color: #10b981; background-color: #f0fdf4; }
+        .auth-input-wrapper input.invalid { border-color: #dc2626; background-color: #fef2f2; }
+        .dark .auth-input-wrapper input.valid { background-color: rgba(16, 185, 129, 0.1); }
+        .dark .auth-input-wrapper input.invalid { background-color: rgba(220, 38, 38, 0.1); }
+
+        .auth-label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: #4b5563; }
+        .dark .auth-label { color: #9ca3af; }
+
+        .status-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #9ca3af; pointer-events: none; }
+        .toggle-pass { pointer-events: auto; cursor: pointer; }
+        
+        /* Password Checklist */
+        .pass-checklist { font-size: 12px; color: #6b7280; margin-top: 8px; display: none; background: #f9fafb; padding: 10px; border-radius: 6px; }
+        .dark .pass-checklist { background: #374151; color: #9ca3af; }
+        .pass-checklist div { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+        .pass-checklist div.done { color: #10b981; font-weight: 600; }
+        .pass-checklist div i { width: 14px; text-align: center; }
+
+        /* Sections Animation */
+        .form-section { display: none; animation: fadeIn 0.3s ease; }
+        .form-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* OTP Modal inside Auth */
+        .otp-overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.98); z-index: 20; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; border-radius: 0.75rem; }
+        .dark .otp-overlay { background: rgba(37, 42, 49, 0.98); }
+        .otp-overlay.active { display: flex; }
+        .otp-inputs input { width: 45px; height: 50px; text-align: center; font-size: 20px; border: 1px solid #d1d5db; border-radius: 8px; margin: 0 4px; background: white; }
+        .dark .otp-inputs input { background: #3A404A; border-color: #4A505A; color: white; }
+        
+        #profile-dropdown { position: absolute; top: 110%; right: 0; width: 260px; z-index: 60; }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-[#1A1D21]">
+
+<header id="main-header" class="fixed top-0 left-0 right-0 z-40 bg-white shadow-sm dark:bg-[#1A1D21] dark:border-b dark:border-[#3A404A]">
+    <div class="max-w-6xl mx-auto flex justify-between items-center p-4 md:p-6">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-black-text tracking-tight uppercase dark:text-[#EAEAEA]">
+            Jar Fanmade
+        </h1>
+        <div id="user-action-container" class="relative z-50">
+            <button id="user-action-button" class="circular-button transition duration-150 transform hover:scale-105 focus:ring-4 text-gray-700 dark:text-[#EAEAEA] bg-white dark:bg-[#3A404A] border border-gray-200 dark:border-gray-700">
+                <svg id="user-action-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"></svg>
+            </button>
+            <div id="profile-dropdown" style="display: none;" class="bg-white border border-gray-100 rounded-xl shadow-xl dark:bg-[#252A31] dark:border-[#3A404A] overflow-hidden">
+                <div class="p-4 border-b border-gray-200 dark:border-[#3A404A] bg-gray-50 dark:bg-[#2d333b]">
+                    <p class="text-xs text-gray-500 dark:text-[#9A9A9A] uppercase tracking-wider font-bold">Signed in as</p>
+                    <p id="user-name-display" class="text-sm font-bold text-primary dark:text-primary-light mt-1">Guest User</p>
+                    <p id="user-email-display" class="text-xs text-gray-600 dark:text-[#EAEAEA] truncate">Not logged in</p>
+                </div>
+                <button id="dropdown-logout-btn" class="w-full text-left px-4 py-3 text-sm text-danger font-semibold hover:bg-red-50 dark:hover:bg-[#3A404A] transition duration-150 flex items-center">
+                    <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> Log Out
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div id="auth-modal-backdrop" style="display: none;">
+    <div id="auth-container" class="w-full max-w-md p-0 bg-white rounded-2xl corporate-card-pro dark:bg-[#252A31] dark:border-[#3A404A] relative overflow-hidden">
+        
+        <div id="login-view" class="form-section active p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Welcome Back</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Enter credentials to access ledger</p>
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label">Email Address</label>
+                <div class="auth-input-wrapper">
+                    <input type="email" id="login-email" placeholder="Ex: user@example.com">
+                    <i class="fa-regular fa-envelope status-icon"></i>
+                </div>
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label">Password</label>
+                <div class="auth-input-wrapper">
+                    <input type="password" id="login-pass" placeholder="••••••••">
+                    <i class="fa-regular fa-eye status-icon toggle-pass" onclick="togglePass('login-pass', this)"></i>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                    <label class="flex items-center text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                        <input type="checkbox" class="mr-1 accent-primary"> Remember me
+                    </label>
+                    <button onclick="switchToView('recovery-view')" class="text-xs font-semibold text-primary hover:underline">Forgot Password?</button>
+                </div>
+            </div>
+
+            <button onclick="handleLogin()" class="w-full bg-primary text-white font-bold py-3 rounded-lg shadow-md hover:bg-primary-dark transition duration-150 mt-2">
+                Sign In
+            </button>
+
+            <div class="flex items-center my-4">
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-600"></div>
+                <span class="px-3 text-xs text-gray-400 font-medium">OR</span>
+                <div class="flex-grow border-t border-gray-200 dark:border-gray-600"></div>
+            </div>
+
+            <button onclick="signInWithGoogle()" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 rounded-lg hover:bg-gray-50 transition duration-150 flex items-center justify-center dark:bg-[#3A404A] dark:border-gray-600 dark:text-white">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5 mr-2">
+                Continue with Google
+            </button>
+
+            <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
+                Don't have an account? <button onclick="switchToView('signup-view')" class="font-bold text-primary hover:underline">Sign Up</button>
+            </p>
+        </div>
+
+        <div id="signup-view" class="form-section p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white">Create Account</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Verify mobile to get started</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="auth-label">First Name</label>
+                    <input type="text" id="reg-fname" placeholder="John" class="w-full p-2.5 border rounded-lg text-sm dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-white">
+                </div>
+                <div>
+                    <label class="auth-label">Last Name</label>
+                    <input type="text" id="reg-lname" placeholder="Doe" class="w-full p-2.5 border rounded-lg text-sm dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-white">
+                </div>
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label">Mobile Number (For Verification)</label>
+                <div class="auth-input-wrapper">
+                    <input type="tel" id="reg-mobile" placeholder="9876543210" maxlength="10">
+                    <i class="fa-solid fa-mobile-screen status-icon"></i>
+                </div>
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label">Email Address</label>
+                <div class="auth-input-wrapper">
+                    <input type="email" id="reg-email" placeholder="you@example.com">
+                </div>
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label">Password (Max 16 Chars)</label>
+                <div class="auth-input-wrapper">
+                    <input type="password" id="reg-pass" maxlength="16" placeholder="Create password">
+                    <i class="fa-regular fa-eye status-icon toggle-pass" onclick="togglePass('reg-pass', this)"></i>
+                </div>
+                <div class="pass-checklist" id="pass-checklist">
+                    <div id="chk-len"><i class="fa-regular fa-circle"></i> 8-16 Characters</div>
+                    <div id="chk-mix"><i class="fa-regular fa-circle"></i> Upper, Lower, Number, Symbol</div>
+                </div>
+            </div>
+
+            <div class="auth-input-group">
+                <label class="auth-label">Confirm Password</label>
+                <div class="auth-input-wrapper">
+                    <input type="password" id="reg-cpass" maxlength="16" placeholder="Repeat password">
+                </div>
+            </div>
+
+            <button onclick="initiateSignup()" class="w-full bg-accent text-white font-bold py-3 rounded-lg shadow-md hover:bg-emerald-700 transition duration-150 mt-2">
+                Verify Mobile & Sign Up
+            </button>
+
+            <p class="text-center text-sm text-gray-600 dark:text-gray-400 mt-4">
+                Already have an account? <button onclick="switchToView('login-view')" class="font-bold text-primary hover:underline">Log In</button>
+            </p>
+        </div>
+
+        <div id="recovery-view" class="form-section p-8">
+            <div class="text-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 dark:text-white">Find Account</h2>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Enter registered mobile number</p>
+            </div>
+            <div class="auth-input-group">
+                <label class="auth-label">Mobile Number</label>
+                <div class="auth-input-wrapper">
+                    <input type="tel" id="rec-mobile" placeholder="Enter mobile number">
+                </div>
+            </div>
+            <button onclick="simulateRecovery()" class="w-full bg-primary text-white font-bold py-3 rounded-lg shadow-md mt-2">Find Account</button>
+            <button onclick="switchToView('login-view')" class="w-full text-gray-500 font-semibold py-3 mt-2 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Back to Login</button>
+        </div>
+
+        <div id="otp-overlay" class="otp-overlay">
+            <div class="w-full max-w-xs">
+                <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-2">Verify Mobile</h3>
+                <p class="text-sm text-gray-500 mb-4">OTP sent to <span id="otp-display-mobile" class="font-bold text-primary"></span></p>
+                <p class="text-xs text-blue-600 mb-4">(Demo OTP: 1234)</p>
+                
+                <div class="flex justify-center mb-6 otp-inputs">
+                    <input type="text" maxlength="1" oninput="focusNext(this, 0)">
+                    <input type="text" maxlength="1" oninput="focusNext(this, 1)">
+                    <input type="text" maxlength="1" oninput="focusNext(this, 2)">
+                    <input type="text" maxlength="1" oninput="focusNext(this, 3)">
+                </div>
+
+                <button onclick="verifyAndCreateUser()" class="w-full bg-primary text-white font-bold py-3 rounded-lg shadow-lg mb-3">Verify & Create</button>
+                <button onclick="closeOtp()" class="text-sm text-gray-500 hover:text-gray-800">Cancel</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="app" class="max-w-6xl mx-auto space-y-10 p-6 md:p-10" style="padding-top: 120px;">
+
+    <div id="app-content-area" style="display: block;">
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+            <div id="select-client-card" class="lg:col-span-2 bg-white p-6 rounded-xl corporate-card-pro dark:bg-[#252A31] dark:border-[#3A404A]">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3 dark:text-[#EAEAEA] dark:border-[#3A404A]">🔍 Select Active Client</h2>
+                <div class="search-input-container relative mb-4">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="client-search-input" placeholder="Type name to search..." class="block w-full rounded-lg border-gray-300 shadow-sm p-3 pl-10 transition duration-150 dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-[#EAEAEA]">
+                </div>
+                <select id="client-selector" class="block w-full rounded-lg border-gray-300 shadow-sm p-3 bg-white font-semibold transition duration-150 dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-[#EAEAEA]"></select>
+            </div>
+
+            <div id="new-client-card" class="bg-white p-6 rounded-xl corporate-card-pro flex flex-col justify-between dark:bg-[#252A31] dark:border-[#3A404A]">
+                <h2 class="text-xl font-bold text-primary mb-4 border-b border-primary/20 pb-3 dark:text-primary-light">➕ New Client Setup</h2>
+                <button id="add-new-client-btn" class="w-full bg-primary text-white font-semibold py-3 px-4 rounded-lg shadow-xl hover:bg-primary-dark transition duration-150">
+                    + Add New Client
+                </button>
+            </div>
+
+            <div id="client-actions-card" class="bg-white p-6 rounded-xl corporate-card-pro flex flex-col justify-between dark:bg-[#252A31] dark:border-[#3A404A]">
+                <h2 class="text-xl font-bold text-gray-800 mb-4 border-b border-gray-200 pb-3 dark:text-[#EAEAEA] dark:border-[#3A404A]">🔧 Client Actions</h2>
+                <div class="space-y-3">
+                    <button onclick="renameClient()" id="rename-client-btn" class="w-full bg-gray-500 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-gray-600 transition duration-150">Rename Client</button>
+                    <button onclick="deleteClient()" id="delete-client-btn" class="w-full bg-danger text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-150">Delete Client</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="content-area-main-structure">
+            <div id="content-display-header">
+                <div class="flex justify-between items-center mb-6 mt-8">
+                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-[#EAEAEA]">
+                        Client: <span id="active-client-display" class="text-primary dark:text-primary-light"></span>
+                    </h2>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl corporate-card-pro dark:bg-[#252A31] dark:border-[#3A404A]">
+                    <h3 class="text-xl font-bold text-gray-800 mb-5 border-b border-gray-100 pb-3 dark:text-[#EAEAEA] dark:border-[#3A404A]">📊 Financial Overview</h3>
+                    <div id="summary-results"></div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                    <div class="bg-white p-6 rounded-xl corporate-card-pro dark:bg-[#252A31] dark:border-[#3A404A]">
+                        <h3 class="text-xl font-bold text-primary mb-5 border-b border-primary/20 pb-3 flex items-center dark:text-primary-light">
+                            <i class="fa-regular fa-clock mr-2"></i> Task Entry
+                        </h3>
+                        <div class="space-y-5">
+                            <div class="grid grid-cols-3 gap-3">
+                                <input type="number" id="task-hr-input" placeholder="Hr" class="client-dependent-input block w-full rounded-lg border-gray-300 shadow-sm p-3 text-center text-lg font-mono dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-[#EAEAEA]" min="0">
+                                <input type="number" id="task-min-input" placeholder="Min" class="client-dependent-input block w-full rounded-lg border-gray-300 shadow-sm p-3 text-center text-lg font-mono dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-[#EAEAEA]" min="0" max="59">
+                                <input type="number" id="task-sec-input" placeholder="Sec" class="client-dependent-input block w-full rounded-lg border-gray-300 shadow-sm p-3 text-center text-lg font-mono dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-[#EAEAEA]" min="0" max="59">
+                            </div>
+                        </div>
+                        <button onclick="addTask()" class="client-dependent-btn mt-6 w-full bg-primary text-white font-extrabold py-3.5 rounded-lg shadow-xl hover:bg-primary-dark transition duration-150">ADD BILLED TIME</button>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl corporate-card-pro dark:bg-[#252A31] dark:border-[#3A404A]">
+                        <h3 class="text-xl font-bold text-accent mb-5 border-b border-accent/20 pb-3 flex items-center">
+                            <i class="fa-solid fa-indian-rupee-sign mr-2"></i> Payment Entry
+                        </h3>
+                        <input type="number" id="payment-amount-input" placeholder="₹ 0.00" class="client-dependent-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 text-xl font-extrabold text-accent dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-accent-light" min="0">
+                        <button onclick="addPayment()" class="client-dependent-btn mt-6 w-full bg-accent text-white font-extrabold py-3.5 rounded-lg shadow-xl hover:bg-emerald-700 transition duration-150">ADD DEPOSIT</button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl corporate-card-pro mt-8 dark:bg-[#252A31] dark:border-[#3A404A]">
+                    <h3 class="text-xl font-bold text-gray-800 mb-5 border-b border-gray-200 pb-3 flex items-center dark:text-[#EAEAEA] dark:border-[#3A404A]">
+                        <i class="fa-solid fa-sliders mr-2"></i> Billing & Utility
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div class="col-span-1 md:col-span-3">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-[#9A9A9A]">Hourly Rate (₹)</label>
+                            <input type="number" id="hourly-rate-input" class="client-dependent-input mt-1 block w-full rounded-lg border-gray-300 shadow-sm p-3 text-lg font-bold dark:bg-[#3A404A] dark:border-[#4A505A] dark:text-[#EAEAEA]" min="1">
+                        </div>
+                        <button onclick="updateHourlyRate()" class="client-dependent-btn bg-primary/80 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-primary-dark transition duration-150">Update Rate</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center dark:text-[#EAEAEA]"><i class="fa-solid fa-list-check mr-2"></i> Task History</h3>
+                        <div id="task-list" class="history-list corporate-card-pro bg-white dark:bg-[#252A31] dark:border-[#3A404A]"></div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-3 flex items-center dark:text-[#EAEAEA]"><i class="fa-solid fa-money-bill-transfer mr-2"></i> Payment History</h3>
+                        <div id="payment-list" class="history-list corporate-card-pro bg-white dark:bg-[#252A31] dark:border-[#3A404A]"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="welcome-message" class="text-center p-10 bg-white rounded-xl corporate-card-pro mt-8 dark:bg-[#252A31] dark:border-[#3A404A]" style="display:none;"></div>
+        </div>
+    </div>
+</div>
+
+<button id="scroll-to-top" class="circular-button fixed bottom-5 right-5 z-30 bg-primary text-white transition duration-150 transform hover:scale-110 focus:ring-4 hidden">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+
+<script>
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCG9w-pUJq9FopmIUUPLUVMc03P84Rblgw",
+      authDomain: "jar-ledger.firebaseapp.com",
+      databaseURL: "https://jar-ledger-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "jar-ledger",
+      storageBucket: "jar-ledger.firebasestorage.app",
+      messagingSenderId: "915159281904",
+      appId: "1:915159281904:web:4f3d5c940a03c4b525d235",
+      measurementId: "G-YB740FJBBG"
+    };
+
+    // --- GLOBAL STATE ---
+    let database, auth, currentUserId = null, clientLedgersRef = null;
+    let clientLedgers = { activeClientName: 'Default Client', clients: { 'Default Client': { tasks: [], payments: [], settings: { hourlyRate: 150 } } } };
+    let isFirebaseReady = false;
+    const DEFAULT_CLIENT_NAME = 'Default Client';
+    let localDefaultClientData = JSON.parse(localStorage.getItem('jarLocalDefaultClient')) || clientLedgers.clients[DEFAULT_CLIENT_NAME];
+
+    // --- INITIALIZATION ---
+    try {
+         firebase.initializeApp(firebaseConfig);
+         database = firebase.database();
+         auth = firebase.auth();
+         isFirebaseReady = true;
+    } catch (e) {
+         console.error("Firebase Init Error:", e);
+         alert("Firebase Connect Failed");
+    }
+
+    // --- AUTH UI LOGIC ---
+    const authModal = document.getElementById('auth-modal-backdrop');
+    const showAuth = () => { authModal.style.display = 'flex'; switchToView('login-view'); };
+    const hideAuth = (e) => { if(e.target === authModal) authModal.style.display = 'none'; };
+    const switchToView = (id) => {
+        document.querySelectorAll('.form-section').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        // Reset forms
+        document.querySelectorAll('input').forEach(i => { if(i.type !== 'checkbox') i.value = ''; i.classList.remove('valid','invalid'); });
+    };
+    
+    const toggleProfileDropdown = () => {
+        const dd = document.getElementById('profile-dropdown');
+        dd.style.display = dd.style.display === 'block' ? 'none' : 'block';
+    };
+
+    // --- VALIDATION LOGIC ---
+    function validateField(input, regex) {
+        const isValid = regex.test(input.value);
+        if(input.value.length > 0) {
+            input.classList.toggle('valid', isValid);
+            input.classList.toggle('invalid', !isValid);
+        } else {
+            input.classList.remove('valid', 'invalid');
+        }
+        return isValid;
+    }
+
+    function togglePass(id, icon) {
+        const input = document.getElementById(id);
+        input.type = input.type === 'password' ? 'text' : 'password';
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+    }
+
+    // Register Listeners for Validation
+    const regEmail = document.getElementById('reg-email');
+    const regPass = document.getElementById('reg-pass');
+    const regCpass = document.getElementById('reg-cpass');
+
+    regEmail?.addEventListener('input', () => validateField(regEmail, /^[^\s@]+@[^\s@]+\.[^\s@]+$/));
+    
+    regPass?.addEventListener('focus', () => document.getElementById('pass-checklist').style.display = 'block');
+    regPass?.addEventListener('input', () => {
+        const val = regPass.value;
+        const len = val.length >= 8 && val.length <= 16;
+        const mix = /[A-Z]/.test(val) && /[a-z]/.test(val) && /[0-9]/.test(val) && /[^A-Za-z0-9]/.test(val);
+        
+        document.getElementById('chk-len').className = len ? 'done' : '';
+        document.getElementById('chk-len').querySelector('i').className = len ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle';
+        
+        document.getElementById('chk-mix').className = mix ? 'done' : '';
+        document.getElementById('chk-mix').querySelector('i').className = mix ? 'fa-solid fa-circle-check' : 'fa-regular fa-circle';
+
+        if(len && mix) regPass.classList.add('valid'); else regPass.classList.remove('valid');
+    });
+
+    regCpass?.addEventListener('input', () => {
+        const match = regCpass.value === regPass.value && regCpass.value !== '';
+        regCpass.classList.toggle('valid', match);
+        regCpass.classList.toggle('invalid', !match);
+    });
+
+    // --- AUTH ACTIONS ---
+    function handleLogin() {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        if(!email || !pass) { alert("Please fill all fields"); return; }
+        auth.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
+    }
+
+    function signInWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        const isApp = (typeof window.AndroidApp !== 'undefined') || /Android.*wv/.test(navigator.userAgent);
+        if (isApp) auth.signInWithRedirect(provider); else auth.signInWithPopup(provider).catch(e => alert(e.message));
+    }
+
+    function initiateSignup() {
+        const fname = document.getElementById('reg-fname').value;
+        const mobile = document.getElementById('reg-mobile').value;
+        const email = document.getElementById('reg-email').value;
+        const pass = document.getElementById('reg-pass').value;
+        const cpass = document.getElementById('reg-cpass').value;
+
+        if(!fname || !mobile || !email || !pass) { alert("Fill all details"); return; }
+        if(pass !== cpass) { alert("Passwords do not match"); return; }
+        if(!regPass.classList.contains('valid')) { alert("Password is weak"); return; }
+
+        // Show OTP
+        document.getElementById('otp-display-mobile').textContent = mobile;
+        document.getElementById('otp-overlay').classList.add('active');
+        document.querySelector('.otp-inputs input').focus();
+    }
+
+    function focusNext(el, index) {
+        if(el.value.length === 1) {
+            const next = document.querySelectorAll('.otp-inputs input')[index + 1];
+            if(next) next.focus();
+        }
+    }
+
+    function closeOtp() { document.getElementById('otp-overlay').classList.remove('active'); }
+
+    function verifyAndCreateUser() {
+        let otp = '';
+        document.querySelectorAll('.otp-inputs input').forEach(i => otp += i.value);
+        
+        if(otp === '1234') {
+            // Create User
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const fname = document.getElementById('reg-fname').value;
+            const lname = document.getElementById('reg-lname').value;
+            const mobile = document.getElementById('reg-mobile').value;
+
+            auth.createUserWithEmailAndPassword(email, pass).then((userCred) => {
+                // Save Extra Profile Data
+                database.ref('users/' + userCred.user.uid + '/profile').set({
+                    firstName: fname, lastName: lname, mobile: mobile, email: email
+                });
+                closeOtp();
+                authModal.style.display = 'none';
+                alert("Account Created Successfully!");
+            }).catch(e => alert(e.message));
+
+        } else {
+            alert("Invalid OTP. Try 1234");
+        }
+    }
+
+    function simulateRecovery() {
+        const mob = document.getElementById('rec-mobile').value;
+        if(mob.length < 10) { alert("Invalid Mobile"); return; }
+        // In real app: query DB for mobile, get email, sendMagicLink
+        alert("Account found! Magic link sent to email associated with " + mob);
+        switchToView('login-view');
+    }
+
+    // --- EXISTING APP LOGIC (Untouched but integrated) ---
+    auth.onAuthStateChanged(user => {
+        const btn = document.getElementById('user-action-button');
+        const icon = document.getElementById('user-action-icon');
+        if (user) {
+            currentUserId = user.uid;
+            authModal.style.display = 'none';
+            document.getElementById('profile-dropdown').style.display = 'none';
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />';
+            btn.style.backgroundColor = '#0078D4';
+            btn.onclick = toggleProfileDropdown;
+            
+            // Fetch Profile Name if available
+            database.ref('users/' + user.uid + '/profile').once('value').then(snap => {
+                const p = snap.val();
+                document.getElementById('user-name-display').textContent = p ? `${p.firstName} ${p.lastName}` : 'App User';
+            });
+            document.getElementById('user-email-display').textContent = user.email;
+
+            clientLedgersRef = database.ref(`users/${currentUserId}/clientLedgers`);
+            startRealtimeListener();
+        } else {
+            currentUserId = null;
+            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />';
+            btn.style.backgroundColor = '#107c10';
+            btn.onclick = showAuth;
+            document.getElementById('user-name-display').textContent = "Guest";
+            clientLedgers = { activeClientName: DEFAULT_CLIENT_NAME, clients: { [DEFAULT_CLIENT_NAME]: localDefaultClientData } };
+            renderAllClientData();
+        }
+    });
+
+    // --- DATA SYNC & RENDER FUNCTIONS (Same as before) ---
+    const startRealtimeListener = () => {
+         const welcome = document.getElementById('welcome-message');
+         const header = document.getElementById('content-display-header');
+         header.style.display = 'none'; welcome.style.display = 'block';
+         welcome.innerHTML = `<h2 class="text-2xl font-bold text-primary">Syncing Data...</h2>`;
+
+         clientLedgersRef.on('value', (snapshot) => {
+             const data = snapshot.val();
+             if (data && data.clients) {
+                 if (data.clients[DEFAULT_CLIENT_NAME]) delete data.clients[DEFAULT_CLIENT_NAME];
+                 clientLedgers.clients = data.clients;
+                 clientLedgers.activeClientName = data.activeClientName || DEFAULT_CLIENT_NAME;
+             } else {
+                clientLedgers = { activeClientName: null, clients: {} };
+             }
+             clientLedgers.clients[DEFAULT_CLIENT_NAME] = localDefaultClientData;
+             if(!clientLedgers.activeClientName) clientLedgers.activeClientName = DEFAULT_CLIENT_NAME;
+             renderAllClientData();
+         });
+    };
+
+    const saveDataToCloud = () => {
+         if (!clientLedgersRef || !currentUserId) return;
+         const dataToSave = JSON.parse(JSON.stringify(clientLedgers));
+         delete dataToSave.clients[DEFAULT_CLIENT_NAME];
+         clientLedgersRef.set(dataToSave);
+    };
+
+    const saveLocalData = () => {
+        localStorage.setItem('jarLocalDefaultClient', JSON.stringify(clientLedgers.clients[DEFAULT_CLIENT_NAME]));
+    };
+
+    const getOrCreateClientData = (name) => {
+        if (!clientLedgers.clients[name]) clientLedgers.clients[name] = { tasks: [], payments: [], settings: { hourlyRate: 150 } };
+        if (name === DEFAULT_CLIENT_NAME) saveLocalData();
+        return clientLedgers.clients[name];
+    };
+
+    // --- RENDER HELPERS ---
+    const formatCurrency = (amt) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amt);
+    const formatDate = (ds) => new Date(ds).toLocaleDateString('en-IN', {day:'numeric', month:'short'});
+    const toHMS = (dec) => { 
+        const sec = Math.round(dec * 3600); 
+        return `${Math.floor(sec/3600)}h ${Math.floor((sec%3600)/60)}m ${sec%60}s`; 
+    };
+
+    // --- DOM MANIPULATION ---
+    const renderAllClientData = () => {
+        const activeName = clientLedgers.activeClientName;
+        const data = activeName ? clientLedgers.clients[activeName] : null;
+        
+        // Updates Select Dropdown
+        const sel = document.getElementById('client-selector');
+        sel.innerHTML = '';
+        const names = [DEFAULT_CLIENT_NAME, ...Object.keys(clientLedgers.clients).filter(n => n !== DEFAULT_CLIENT_NAME).sort()];
+        names.forEach(n => {
+            const op = document.createElement('option'); op.value = n; op.text = n; 
+            if(n === activeName) op.selected = true;
+            sel.appendChild(op);
+        });
+        
+        // Visibility logic
+        const isCloud = currentUserId && activeName !== DEFAULT_CLIENT_NAME;
+        document.getElementById('client-actions-card').style.display = isCloud ? 'flex' : 'none';
+        document.getElementById('new-client-card').style.display = currentUserId ? 'flex' : 'none';
+        document.getElementById('select-client-card').style.display = (!currentUserId || activeName === DEFAULT_CLIENT_NAME) ? 'block' : 'block';
+
+        // Main Content Render
+        if(!activeName || (currentUserId && activeName === DEFAULT_CLIENT_NAME)) {
+            document.getElementById('content-display-header').style.display = 'none';
+            document.getElementById('welcome-message').style.display = 'block';
+            document.getElementById('welcome-message').innerHTML = currentUserId ? 
+                `<h2>Welcome!</h2><p>Select a cloud client to view ledger.</p>` : 
+                `<h2>Guest Mode</h2><p>Data saved locally.</p>`;
+        } else {
+            document.getElementById('content-display-header').style.display = 'block';
+            document.getElementById('welcome-message').style.display = 'none';
+            document.getElementById('active-client-display').textContent = activeName;
+            
+            // Summary
+            const tasks = Object.values(data.tasks || {});
+            const payments = Object.values(data.payments || {});
+            const totalHrs = tasks.reduce((s, t) => s + t.decimalHours, 0);
+            const billed = totalHrs * data.settings.hourlyRate;
+            const paid = payments.reduce((s, p) => s + p.amount, 0);
+            const balance = billed - paid;
+            
+            document.getElementById('summary-results').innerHTML = `
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div class="p-3 bg-gray-50 rounded border dark:bg-gray-700 dark:border-gray-600">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Rate</p>
+                        <p class="text-xl font-bold dark:text-white">${formatCurrency(data.settings.hourlyRate)}</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded border dark:bg-gray-700 dark:border-gray-600">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Hours</p>
+                        <p class="text-xl font-bold dark:text-white">${toHMS(totalHrs)}</p>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded border dark:bg-gray-700 dark:border-gray-600">
+                        <p class="text-xs text-gray-500 dark:text-gray-400 uppercase">Billed</p>
+                        <p class="text-xl font-bold dark:text-white">${formatCurrency(billed)}</p>
+                    </div>
+                    <div class="p-3 rounded border-2 ${balance < 0 ? 'border-red-200 bg-red-50 text-red-600 dark:bg-red-900/30' : 'border-green-200 bg-green-50 text-green-600 dark:bg-green-900/30'}">
+                        <p class="text-xs uppercase">Balance</p>
+                        <p class="text-2xl font-extrabold">${formatCurrency(Math.abs(balance))}</p>
+                        <p class="text-xs">${balance < 0 ? 'Due' : 'Credit'}</p>
+                    </div>
+                </div>
+                <div class="text-center mt-4 text-sm text-gray-500 dark:text-gray-400">Total Deposited: <span class="font-bold text-accent">${formatCurrency(paid)}</span></div>
+            `;
+            
+            document.getElementById('hourly-rate-input').value = data.settings.hourlyRate;
+            
+            // Lists
+            renderList('task-list', tasks, (t, i) => `
+                <div>
+                    <p class="font-bold text-gray-800 dark:text-gray-200"><span class="text-primary mr-2">#${tasks.length - i}</span>${formatCurrency(t.decimalHours * data.settings.hourlyRate)}</p>
+                    <p class="text-xs text-gray-500">${toHMS(t.decimalHours)} • ${formatDate(t.date)}</p>
+                </div>
+                <button onclick="deleteItem('tasks', ${t.timestamp})" class="text-red-500 hover:bg-red-50 p-2 rounded"><i class="fa-solid fa-trash"></i></button>
+            `);
+            
+            renderList('payment-list', payments, (p, i) => `
+                <div>
+                    <p class="font-bold text-gray-800 dark:text-gray-200"><span class="text-accent mr-2">#${payments.length - i}</span>${formatCurrency(p.amount)}</p>
+                    <p class="text-xs text-gray-500">${formatDate(p.date)}</p>
+                </div>
+                <button onclick="deleteItem('payments', ${p.timestamp})" class="text-red-500 hover:bg-red-50 p-2 rounded"><i class="fa-solid fa-trash"></i></button>
+            `);
+        }
+    };
+
+    const renderList = (id, arr, tpl) => {
+        const el = document.getElementById(id);
+        el.innerHTML = '';
+        if(!arr.length) { el.innerHTML = '<p class="text-center text-sm text-gray-400 p-4">No entries</p>'; return; }
+        [...arr].sort((a,b) => b.timestamp - a.timestamp).forEach((item, i) => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center p-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition';
+            div.innerHTML = tpl(item, i);
+            el.appendChild(div);
+        });
+    }
+
+    // --- CRUD OPERATIONS ---
+    window.handleClientSelectionChange = (e) => { clientLedgers.activeClientName = e.target.value; saveDataToCloud(); renderAllClientData(); };
+    document.getElementById('client-selector').addEventListener('change', window.handleClientSelectionChange);
+    
+    window.addNewClient = () => {
+        const n = prompt("Client Name:");
+        if(n && !clientLedgers.clients[n]) { 
+            getOrCreateClientData(n); clientLedgers.activeClientName = n; 
+            saveLocalData(); saveDataToCloud(); renderAllClientData(); 
+        }
+    };
+    document.getElementById('add-new-client-btn').addEventListener('click', window.addNewClient);
+
+    window.addTask = () => {
+        const h = parseFloat(document.getElementById('task-hr-input').value)||0;
+        const m = parseFloat(document.getElementById('task-min-input').value)||0;
+        const s = parseFloat(document.getElementById('task-sec-input').value)||0;
+        if(h+m+s === 0) return;
+        getOrCreateClientData(clientLedgers.activeClientName).tasks.push({
+            hours: h, minutes: m, seconds: s, decimalHours: h + m/60 + s/3600,
+            date: new Date().toISOString(), timestamp: Date.now()
+        });
+        document.getElementById('task-hr-input').value = '';
+        saveLocalData(); saveDataToCloud(); renderAllClientData();
+    };
+
+    window.addPayment = () => {
+        const amt = parseFloat(document.getElementById('payment-amount-input').value);
+        if(!amt) return;
+        getOrCreateClientData(clientLedgers.activeClientName).payments.push({
+            amount: amt, date: new Date().toISOString(), timestamp: Date.now()
+        });
+        document.getElementById('payment-amount-input').value = '';
+        saveLocalData(); saveDataToCloud(); renderAllClientData();
+    };
+
+    window.updateHourlyRate = () => {
+        const r = parseFloat(document.getElementById('hourly-rate-input').value);
+        if(r) { getOrCreateClientData(clientLedgers.activeClientName).settings.hourlyRate = r; saveLocalData(); saveDataToCloud(); renderAllClientData(); }
+    };
+
+    window.deleteItem = (type, ts) => {
+        if(!confirm("Delete?")) return;
+        const d = getOrCreateClientData(clientLedgers.activeClientName);
+        d[type] = Object.values(d[type]).filter(i => i.timestamp !== ts);
+        saveLocalData(); saveDataToCloud(); renderAllClientData();
+    };
+    
+    window.logout = () => { auth.signOut().then(() => location.reload()); };
+    document.getElementById('dropdown-logout-btn').addEventListener('click', window.logout);
+    document.getElementById('auth-modal-backdrop').addEventListener('click', hideAuth);
+
+    // Scroll Top
+    const sb = document.getElementById('scroll-to-top');
+    window.onscroll = () => sb.style.display = window.scrollY > 100 ? 'flex' : 'none';
+    sb.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+</script>
+</body>
+</html>
