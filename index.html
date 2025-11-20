@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jar Fanmade - Professional Ledger</title>
+    <title>Jar Fanmade</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,23 +25,65 @@
                         'dark-text': '#EAEAEA',
                         'dark-subtext': '#9A9A9A',
                     },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    boxShadow: { 'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)' }
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                        'glow': '0 0 15px rgba(0, 120, 212, 0.3)',
+                    },
+                    animation: {
+                        'rgb-border': 'rgb-border 3s linear infinite',
+                    },
+                    keyframes: {
+                        'rgb-border': {
+                            '0%, 100%': { borderColor: '#ff0000' },
+                            '33%': { borderColor: '#00ff00' },
+                            '66%': { borderColor: '#0000ff' },
+                        }
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        /* Slim Scrollbar */
-        .history-list { max-height: 350px; overflow-y: auto; padding-right: 5px; }
-        .history-list::-webkit-scrollbar { width: 4px; }
-        .history-list::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .dark .history-list::-webkit-scrollbar-thumb { background: #4b5563; }
+        /* --- Custom Slim Scrollbar (Only for History Lists) --- */
+        .history-list {
+            max-height: 350px; /* Fixed height for internal scroll */
+            overflow-y: auto;  /* Enable vertical scroll */
+            padding-right: 5px;
+        }
+
+        /* Scrollbar styling specifically for Webkit (Chrome/Safari/Android WebView) */
+        .history-list::-webkit-scrollbar {
+            width: 4px; /* Very thin */
+        }
+        .history-list::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        .history-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        .dark .history-list::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+        /* Auto-hide effect: Thumb becomes transparent when inactive (supported in modern browsers) */
+        .history-list {
+            scrollbar-color: #cbd5e1 transparent;
+            scrollbar-width: thin;
+        }
+
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
         
-        body { transition: background-color 0.3s ease, color 0.3s ease; }
-        
-        /* RGB Animation for Log In Button */
+        *, *::before, *::after {
+            transition-property: background-color, border-color, color, fill, stroke;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+        }
+
+        /* RGB Animation for Login Button */
         .rgb-btn {
             background: linear-gradient(45deg, #ff357a, #fff172, #0078D4, #ff357a);
             background-size: 400% 400%;
@@ -48,48 +91,86 @@
             color: white !important;
             border: none !important;
             font-weight: 800 !important;
+            letter-spacing: 0.5px;
         }
-        @keyframes rgb-move { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .disabled-area { opacity: 0.5; pointer-events: none; filter: grayscale(1); }
+        @keyframes rgb-move {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .profile-avatar {
+            object-fit: cover;
+            width: 100%;
+            height: 100%;
+        }
         
-        /* Avatar Styles */
-        .user-avatar-container { width: 40px; height: 40px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; text-transform: uppercase; font-size: 1.1rem; }
+        /* Fallback Avatar Style */
+        .fallback-avatar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .disabled-btn {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(100%);
+        }
     </style>
+
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'system';
+            if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 </head>
 
 <body class="bg-gray-50 text-gray-900 dark:bg-dark-bg dark:text-dark-text">
 
-    <header class="fixed top-0 w-full z-50 bg-white/95 dark:bg-dark-bg/95 backdrop-blur-md border-b border-gray-200 dark:border-dark-border shadow-sm">
+    <header class="fixed top-0 w-full z-50 bg-white/90 dark:bg-dark-bg/95 backdrop-blur-md border-b border-gray-200 dark:border-dark-border shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
-                <div class="flex items-center gap-2">
-                    <div class="w-9 h-9 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">J</div>
-                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Jar <span class="text-primary font-normal">Ledger</span></h1>
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-glow">J</div>
+                    <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Jar <span class="text-primary font-normal">Ledger</span></h1>
                 </div>
 
-                <div class="relative" id="user-menu-container">
-                    <button id="user-btn" class="rgb-btn px-5 py-2 rounded-xl shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2">
-                        LOG IN
-                    </button>
+                <div class="relative" id="user-action-container">
+                    <button id="user-action-button" class="group relative flex items-center justify-center overflow-hidden border-2 border-gray-200 dark:border-gray-600 hover:border-primary dark:hover:border-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300">
+                        </button>
                     
-                    <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-72 bg-white dark:bg-dark-card rounded-xl shadow-2xl border border-gray-100 dark:border-dark-border overflow-hidden z-50">
-                        <div class="p-5 border-b border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-dark-bg/50">
-                            <p class="text-xs font-bold text-gray-500 dark:text-dark-subtext uppercase mb-1">Account</p>
-                            <p id="dropdown-name" class="text-lg font-bold text-gray-900 dark:text-white truncate">Guest User</p>
-                            <p id="dropdown-email" class="text-sm text-gray-500 dark:text-gray-400 truncate">Not Synced</p>
+                    <span id="login-status-dot" class="absolute bottom-0 right-0 block h-3 w-3 rounded-full ring-2 ring-white dark:ring-dark-bg bg-gray-400 z-10 hidden"></span>
+
+                    <div id="profile-dropdown" class="hidden absolute right-0 mt-2 w-64 bg-white dark:bg-dark-card rounded-xl shadow-xl border border-gray-100 dark:border-dark-border transform origin-top-right transition-all duration-200 z-50">
+                        
+                        <div class="p-4 border-b border-gray-100 dark:border-dark-border">
+                            <p class="text-xs font-medium text-gray-500 dark:text-dark-subtext uppercase tracking-wider mb-1">Signed in as</p>
+                            <p id="user-email-display" class="text-sm font-semibold text-gray-900 dark:text-white truncate">Guest</p>
                         </div>
-                        <div class="p-2">
-                            <button id="theme-toggle" class="w-full flex items-center px-4 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-border/50 transition-colors">
-                                <span class="mr-3 text-xl">🌓</span>
-                                <div class="text-left">
-                                    <p class="text-sm font-semibold text-gray-900 dark:text-white">Theme</p>
-                                    <p id="theme-status" class="text-xs text-gray-500">System Default</p>
-                                </div>
+
+                        <div class="py-2">
+                            <button id="theme-toggle-btn" class="w-full flex items-center px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-border/50 transition-colors">
+                                <div id="theme-icon-container" class="mr-3 text-primary"></div>
+                                <span class="flex-grow text-left font-medium">Appearance</span>
+                                <span id="theme-label" class="text-xs text-gray-400 dark:text-gray-500 font-medium bg-gray-100 dark:bg-dark-border px-2 py-0.5 rounded">System</span>
                             </button>
-                            <button id="logout-btn" class="w-full flex items-center px-4 py-3 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-danger transition-colors mt-1">
-                                <span class="mr-3 text-xl">🚪</span>
-                                <span class="font-bold text-sm">Sign Out</span>
+
+                            <button id="dropdown-logout-btn" class="w-full flex items-center px-4 py-3 text-sm text-danger hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H3m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
+                                <span class="font-bold">Sign Out</span>
                             </button>
                         </div>
                     </div>
@@ -98,128 +179,175 @@
         </div>
     </header>
 
-    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8">
+    <main class="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto space-y-8" id="app-content-area">
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-7 bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border">
-                <h2 class="text-sm font-bold text-gray-500 dark:text-dark-subtext uppercase mb-3">Active Workspace</h2>
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <input type="text" id="search-client" placeholder="Search clients..." class="flex-grow p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white focus:ring-2 focus:ring-primary outline-none">
-                    <select id="select-client" class="sm:w-1/3 p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white font-semibold focus:ring-2 focus:ring-primary outline-none"></select>
+            
+            <div class="lg:col-span-8 bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                    <span class="bg-blue-100 dark:bg-blue-900/30 text-primary p-1.5 rounded-lg mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></span>
+                    Select Client
+                </h2>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <div class="relative flex-grow">
+                        <input type="text" id="client-search-input" placeholder="Filter clients..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-shadow">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <select id="client-selector" class="w-full sm:w-1/3 p-3 rounded-xl border border-gray-200 dark:border-dark-border bg-white dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary font-medium"></select>
                 </div>
             </div>
 
-            <div class="lg:col-span-5 bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-sm font-bold text-gray-500 dark:text-dark-subtext uppercase">Client Utility</h2>
-                    <span id="utility-status" class="text-xs bg-primary/10 text-primary px-2 py-1 rounded font-bold">Ready</span>
+            <div id="client-utility-card" class="lg:col-span-4 bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border flex flex-col justify-between">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-gray-900 dark:text-white">Client Utility</h2>
+                    <span class="text-xs font-semibold bg-primary/10 text-primary px-2 py-1 rounded">Manage</span>
                 </div>
-                <div class="flex gap-3">
-                    <button onclick="addNewClient()" class="flex-1 py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-md transition-all active:scale-95">+ New Client</button>
-                    <div class="flex gap-2">
-                        <button onclick="renameClient()" id="btn-rename" class="p-3 bg-gray-100 dark:bg-dark-border text-gray-700 dark:text-white rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Rename">✏️</button>
-                        <button onclick="deleteClient()" id="btn-delete" class="p-3 bg-red-50 dark:bg-red-900/20 text-danger rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors" title="Delete">🗑️</button>
+                
+                <div class="space-y-3">
+                    <button id="add-new-client-btn" class="w-full py-3 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        New Client
+                    </button>
+
+                    <div class="flex gap-3">
+                        <button id="rename-client-btn" class="flex-1 py-2.5 bg-gray-100 dark:bg-dark-border text-gray-700 dark:text-white font-medium rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm flex items-center justify-center gap-1 disabled-btn" disabled>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                            Rename
+                        </button>
+                        <button id="delete-client-btn" class="flex-1 py-2.5 bg-red-50 dark:bg-red-900/20 text-danger font-medium rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-sm flex items-center justify-center gap-1 disabled-btn" disabled>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            Delete
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="dashboard-content">
-            <div class="flex items-end justify-between border-b border-gray-200 dark:border-dark-border pb-4">
+        <div id="content-area-main-structure">
+            <div class="flex items-center justify-between border-b border-gray-200 dark:border-dark-border pb-4 mb-8">
                 <div>
-                    <p class="text-xs font-bold text-gray-500 dark:text-dark-subtext uppercase mb-1">Viewing Ledger For</p>
-                    <h1 id="display-client-name" class="text-4xl font-extrabold text-gray-900 dark:text-white">Client Name</h1>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">Active Ledger</p>
+                    <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white mt-1" id="active-client-display">Loading...</h2>
                 </div>
-                <div class="text-right">
-                    <p class="text-xs font-bold text-gray-500 dark:text-dark-subtext uppercase mb-1">Rate / Hr</p>
-                    <div class="flex items-center gap-2">
-                        <span class="text-lg text-gray-400 font-bold">₹</span>
-                        <input type="number" id="input-rate" class="w-24 bg-transparent text-right text-2xl font-extrabold text-primary border-b-2 border-gray-200 dark:border-dark-border focus:border-primary outline-none p-1" onchange="updateRate()">
-                    </div>
+                <div class="hidden md:block">
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span> Active
+                    </span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="summary-cards">
+            <div id="summary-results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                
                 <div class="bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border">
-                    <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">⏱️ Add Time</h3>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <span class="bg-blue-100 dark:bg-blue-900/30 text-primary p-1.5 rounded-lg mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></span>
+                        Add Time
+                    </h3>
                     <div class="grid grid-cols-3 gap-3 mb-4">
-                        <input type="number" id="in-hr" placeholder="Hr" class="p-3 text-center bg-gray-50 dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-primary">
-                        <input type="number" id="in-min" placeholder="Min" class="p-3 text-center bg-gray-50 dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-primary">
-                        <input type="number" id="in-sec" placeholder="Sec" class="p-3 text-center bg-gray-50 dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white font-bold outline-none focus:ring-2 focus:ring-primary">
+                        <div>
+                            <label class="text-xs text-gray-500 dark:text-gray-400 font-medium ml-1">Hours</label>
+                            <input type="number" id="task-hr-input" placeholder="0" min="0" class="client-dependent-input w-full p-3 text-center text-lg font-bold rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 dark:text-gray-400 font-medium ml-1">Minutes</label>
+                            <input type="number" id="task-min-input" placeholder="0" min="0" max="59" class="client-dependent-input w-full p-3 text-center text-lg font-bold rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500 dark:text-gray-400 font-medium ml-1">Seconds</label>
+                            <input type="number" id="task-sec-input" placeholder="0" min="0" max="59" class="client-dependent-input w-full p-3 text-center text-lg font-bold rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent">
+                        </div>
                     </div>
-                    <button onclick="addTask()" class="w-full py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-md active:scale-95 transition-all">ADD TIME</button>
+                    <button onclick="addTask()" class="client-dependent-btn w-full py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-md transition-all transform active:scale-95">
+                        ADD BILLED TIME
+                    </button>
                 </div>
 
                 <div class="bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border">
-                    <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">💰 Add Deposit</h3>
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+                        <span class="bg-green-100 dark:bg-green-900/30 text-accent p-1.5 rounded-lg mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg></span>
+                        Add Deposit
+                    </h3>
                     <div class="mb-4">
-                        <input type="number" id="in-amount" placeholder="₹ Amount" class="w-full p-3 text-lg bg-gray-50 dark:bg-dark-bg rounded-xl border border-gray-200 dark:border-dark-border text-accent font-bold outline-none focus:ring-2 focus:ring-accent">
+                        <label class="text-xs text-gray-500 dark:text-gray-400 font-medium ml-1">Amount (₹)</label>
+                        <input type="number" id="payment-amount-input" placeholder="₹ 0.00" min="0" class="client-dependent-input w-full p-3 text-lg font-bold text-accent rounded-xl border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg focus:ring-2 focus:ring-accent focus:border-transparent">
                     </div>
-                    <button onclick="addPayment()" class="w-full py-3 bg-accent hover:bg-green-700 text-white font-bold rounded-xl shadow-md active:scale-95 transition-all">ADD DEPOSIT</button>
+                    <button onclick="addPayment()" class="client-dependent-btn w-full py-3 bg-accent hover:bg-green-700 text-white font-bold rounded-xl shadow-md transition-all transform active:scale-95">
+                        ADD DEPOSIT
+                    </button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white dark:bg-dark-card rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border overflow-hidden">
-                    <div class="p-4 bg-gray-50 dark:bg-dark-bg/50 border-b border-gray-100 dark:border-dark-border"><h3 class="font-bold text-gray-700 dark:text-gray-200">Task History</h3></div>
-                    <div id="list-tasks" class="history-list p-2 space-y-1"></div>
+            <div class="space-y-8">
+                <div class="bg-white dark:bg-dark-card p-6 rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border flex flex-col md:flex-row items-end gap-4">
+                    <div class="flex-grow w-full">
+                        <label class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 block">Hourly Rate (₹)</label>
+                        <input type="number" id="hourly-rate-input" class="client-dependent-input w-full p-3 rounded-lg border border-gray-200 dark:border-dark-border bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-white font-bold">
+                    </div>
+                    <button onclick="updateHourlyRate()" class="client-dependent-btn px-6 py-3 bg-gray-800 dark:bg-gray-700 text-white font-semibold rounded-lg hover:bg-black dark:hover:bg-gray-600 transition-colors w-full md:w-auto">
+                        Update Rate
+                    </button>
                 </div>
-                <div class="bg-white dark:bg-dark-card rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border overflow-hidden">
-                    <div class="p-4 bg-gray-50 dark:bg-dark-bg/50 border-b border-gray-100 dark:border-dark-border"><h3 class="font-bold text-gray-700 dark:text-gray-200">Payment History</h3></div>
-                    <div id="list-payments" class="history-list p-2 space-y-1"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border flex flex-col">
+                        <div class="p-4 border-b border-gray-100 dark:border-dark-border">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                Task History
+                            </h3>
+                        </div>
+                        <div id="task-list" class="history-list flex-grow p-1 space-y-1"></div>
+                    </div>
+                    
+                    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-soft border border-gray-100 dark:border-dark-border flex flex-col">
+                        <div class="p-4 border-b border-gray-100 dark:border-dark-border">
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center">
+                                <svg class="w-5 h-5 mr-2 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Payment History
+                            </h3>
+                        </div>
+                        <div id="payment-list" class="history-list flex-grow p-1 space-y-1"></div>
+                    </div>
                 </div>
             </div>
+            
+            <div id="welcome-message" class="hidden text-center py-20">
+                </div>
         </div>
-        
-        <div id="empty-state" class="hidden text-center py-20">
-            <div class="inline-block p-6 rounded-full bg-gray-100 dark:bg-dark-card mb-4 text-4xl">☁️</div>
-            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Cloud Workspace</h2>
-            <p class="text-gray-500 dark:text-gray-400 mt-2">Create a new client or select one to start managing finances.</p>
-        </div>
-
     </main>
 
-    <div id="auth-modal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-3xl shadow-2xl border border-gray-200 dark:border-dark-border overflow-hidden relative">
-            <button onclick="toggleAuthModal(false)" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-white text-xl">✕</button>
-            
+    <div id="auth-modal-backdrop" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-dark-card w-full max-w-md rounded-2xl shadow-2xl border border-gray-200 dark:border-dark-border overflow-hidden transform transition-all scale-100">
             <div class="p-8">
-                <h2 id="auth-header" class="text-2xl font-extrabold text-gray-900 dark:text-white mb-2">Welcome</h2>
-                <p id="auth-sub" class="text-sm text-gray-500 dark:text-gray-400 mb-6">Sign in to sync your data across devices.</p>
-
-                <div id="form-container" class="space-y-4">
-                    <div id="signup-fields" class="hidden space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <input type="text" id="reg-fname" placeholder="First Name" class="p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary">
-                            <input type="text" id="reg-lname" placeholder="Last Name" class="p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary">
-                        </div>
-                        <input type="tel" id="reg-phone" placeholder="Mobile Number" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary">
-                    </div>
-
-                    <input type="email" id="auth-email" placeholder="Email Address" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary">
-                    <input type="password" id="auth-pass" placeholder="Password" class="w-full p-3 rounded-xl bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white outline-none focus:ring-2 focus:ring-primary">
-                    
-                    <div class="flex justify-end">
-                        <button onclick="resetPassword()" class="text-xs text-primary hover:underline font-medium" id="btn-forgot">Forgot Password?</button>
-                    </div>
-
-                    <button id="btn-submit-auth" class="w-full py-3 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl shadow-lg transition-all">Log In</button>
+                <div class="flex justify-between items-center mb-6">
+                    <h2 id="auth-title" class="text-2xl font-bold text-gray-900 dark:text-white">Welcome Back</h2>
+                    <button onclick="hideAuthModal()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
                 </div>
 
-                <div class="my-6 flex items-center"><div class="h-px bg-gray-200 dark:bg-dark-border flex-1"></div><span class="px-4 text-xs text-gray-400 font-bold">OR</span><div class="h-px bg-gray-200 dark:bg-dark-border flex-1"></div></div>
-
-                <button onclick="googleLogin()" class="w-full py-3 bg-white dark:bg-dark-bg border border-gray-200 dark:border-dark-border text-gray-700 dark:text-white font-semibold rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><path d="M17.64 9.2c0-.6-.06-1.2-.17-1.8H9v3.5h4.84c-.2 1.1-.84 2-1.8 2.7v2.3h2.9c1.7-1.6 2.7-3.9 2.7-6.7z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8 5.96-2.2L12 13.6c-.8.5-1.8.9-3 .9-2.3 0-4.3-1.6-5-3.7H1v2.3c1.5 2.9 4.5 4.9 8 4.9z" fill="#34A853"/><path d="M4 10.7c-.2-.6-.3-1.2-.3-1.7s.1-1.1.3-1.7V5H1c-.6 1.2-1 2.5-1 3.9s.4 2.7 1 4l3-2.2z" fill="#FBBC05"/><path d="M9 3.6c1.3 0 2.5.5 3.4 1.4l2.6-2.6C13.5.9 11.4 0 9 0 5.5 0 2.5 2 1 5l3 2.4c.7-2.1 2.7-3.8 5-3.8z" fill="#EA4335"/></g></svg>
+                <button onclick="signInWithGoogle()" class="w-full flex items-center justify-center gap-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-white font-semibold py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors mb-6">
+                    <svg class="w-5 h-5" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><path d="M17.64 9.2045c0-.6381-.0573-1.2518-.1698-1.8409H9v3.4818h4.8436c-.2086 1.125-.8427 2.0782-1.7959 2.7164v2.26h2.9082c1.7018-1.5668 2.68-3.8732 2.68-6.6191z" fill="#4285F4"/><path d="M9 18c2.43 0 4.47-.8032 5.96-2.1764L12.0518 13.56c-.8032.5409-1.8395.8618-3.0518.8618-2.3441 0-4.3282-1.5818-5.0359-3.7109H.9v2.33C2.3909 15.9832 5.4282 18 9 18z" fill="#34A853"/><path d="M3.9641 10.71c-.1818-.5409-.2836-1.1164-.2836-1.71s.1018-1.1691.2836-1.71V4.95H.9C.3273 6.1364 0 7.5232 0 9s.3273 2.8636.9 4.05l3.0641-2.33z" fill="#FBBC05"/><path d="M9 3.5782c1.3236 0 2.5082.4555 3.4409 1.3536l2.5809-2.5809C13.46.8559 11.4236 0 9 0 5.4282 0 2.3909 2.0168.9 5.04L3.9641 7.37c.7077-2.1291 2.6918-3.7918 5.0359-3.7918z" fill="#EA4335"/></g></svg>
                     Continue with Google
                 </button>
 
-                <p class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
-                    <span id="auth-switch-text">New here?</span>
-                    <button onclick="toggleAuthMode()" id="auth-switch-btn" class="text-primary font-bold hover:underline ml-1">Create Account</button>
-                </p>
+                <div class="relative mb-6">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200 dark:border-dark-border"></div></div>
+                    <div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-dark-card text-gray-500">Or continue with email</span></div>
+                </div>
+
+                <div class="space-y-4">
+                    <input type="email" id="auth-email" placeholder="Email address" class="w-full p-3 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                    <input type="password" id="auth-password" placeholder="Password" class="w-full p-3 bg-gray-50 dark:bg-dark-bg border border-gray-200 dark:border-dark-border rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent outline-none">
+                    <button id="auth-submit-btn" class="w-full py-3 bg-primary text-white font-bold rounded-xl shadow-lg hover:bg-primary-hover transition-colors">Log In</button>
+                </div>
+                
+                <div class="mt-6 text-center">
+                    <button id="auth-toggle-link" class="text-sm text-primary hover:text-primary-hover font-semibold">Don't have an account? Sign Up</button>
+                </div>
             </div>
         </div>
     </div>
@@ -229,7 +357,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyCG9w-pUJq9FopmIUUPLUVMc03P84Rblgw",
             authDomain: "jar-ledger.firebaseapp.com",
@@ -237,463 +365,432 @@
             projectId: "jar-ledger",
             storageBucket: "jar-ledger.firebasestorage.app",
             messagingSenderId: "915159281904",
-            appId: "1:915159281904:web:4f3d5c940a03c4b525d235"
+            appId: "1:915159281904:web:4f3d5c940a03c4b525d235",
+            measurementId: "G-YB740FJBBG"
         };
 
-        let db, auth;
-        let currentUser = null;
-        let isLogin = true;
-        const DEFAULT_CLIENT = 'Default Client';
-        
-        // Data Structure
-        let appData = { 
-            activeClient: DEFAULT_CLIENT, 
-            clients: { [DEFAULT_CLIENT]: { tasks: [], payments: [], rate: 150 } } 
+        let database, auth;
+        let clientLedgersRef = null;
+        let currentUserId = null;
+        let isLoginMode = true;
+        let isFirebaseReady = false;
+
+        const DEFAULT_CLIENT_NAME = 'Default Client';
+        let clientLedgers = { activeClientName: DEFAULT_CLIENT_NAME, clients: { [DEFAULT_CLIENT_NAME]: { tasks: [], payments: [], settings: { hourlyRate: 150 } } } };
+
+        // --- THEME SYSTEM (No Refresh) ---
+        const themeIcons = {
+            light: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>',
+            dark: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>',
+            system: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>'
         };
 
-        // --- INITIALIZE ---
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.database();
-            auth = firebase.auth();
-        } catch(e) { console.error(e); }
-
-        // --- THEME LOGIC (Auto & No Refresh) ---
-        function initTheme() {
-            const saved = localStorage.getItem('theme') || 'system';
-            applyTheme(saved);
+        function updateThemeUI(theme) {
+            const iconContainer = document.getElementById('theme-icon-container');
+            const label = document.getElementById('theme-label');
             
-            // Watch System Changes
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-                if(localStorage.getItem('theme') === 'system') applyTheme('system');
-            });
-        }
-
-        function applyTheme(mode) {
-            const root = document.documentElement;
-            const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            isDark ? root.classList.add('dark') : root.classList.remove('dark');
+            if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
             
-            const icon = isDark ? '🌙' : '☀️';
-            const text = mode.charAt(0).toUpperCase() + mode.slice(1);
-            const statusEl = document.getElementById('theme-status');
-            if(statusEl) statusEl.innerHTML = `${icon} ${text}`;
+            if(iconContainer) iconContainer.innerHTML = themeIcons[theme];
+            if(label) label.textContent = theme.charAt(0).toUpperCase() + theme.slice(1);
         }
 
         function toggleTheme() {
-            const modes = ['system', 'light', 'dark'];
             const current = localStorage.getItem('theme') || 'system';
-            const next = modes[(modes.indexOf(current) + 1) % modes.length];
+            const cycle = ['system', 'light', 'dark'];
+            const next = cycle[(cycle.indexOf(current) + 1) % cycle.length];
             localStorage.setItem('theme', next);
-            applyTheme(next);
+            updateThemeUI(next);
         }
 
-        // --- AUTH STATE CHANGE ---
+        // --- INITIALIZATION ---
+        try {
+            firebase.initializeApp(firebaseConfig);
+            database = firebase.database();
+            auth = firebase.auth();
+            isFirebaseReady = true;
+        } catch (e) {
+            console.error("Firebase Init Error:", e);
+            alert("Error connecting to cloud services.");
+        }
+
+        // --- AUTH STATE & PROFILE UI ---
         auth.onAuthStateChanged(user => {
-            const btn = document.getElementById('user-btn');
-            const menu = document.getElementById('profile-dropdown');
-            
+            const btn = document.getElementById('user-action-button');
+            const dot = document.getElementById('login-status-dot');
+            const emailDisplay = document.getElementById('user-email-display');
+
             if (user) {
-                if (!user.emailVerified) {
-                    alert("Please verify your email before logging in.");
-                    auth.signOut();
-                    return;
+                currentUserId = user.uid;
+                emailDisplay.textContent = user.email;
+                dot.classList.remove('bg-gray-400', 'hidden');
+                dot.classList.add('bg-green-500');
+                
+                // Remove RGB animation class and reset styles
+                btn.classList.remove('rgb-btn');
+                btn.style.width = '2.5rem'; // 10 (w-10)
+                btn.style.borderRadius = '9999px'; // rounded-full
+                
+                // PROFESSIONAL PROFILE PHOTO LOGIC
+                if (user.photoURL) {
+                    btn.innerHTML = `<img src="${user.photoURL}" alt="Profile" class="profile-avatar">`;
+                } else {
+                    // Email Login Avatar Fallback
+                    const initial = user.email.charAt(0).toUpperCase();
+                    btn.innerHTML = `<div class="fallback-avatar">${initial}</div>`;
                 }
 
-                currentUser = user;
-                btn.classList.remove('rgb-btn');
-                btn.style.padding = '0';
-                btn.style.width = '40px';
-                btn.style.height = '40px';
-                btn.style.borderRadius = '50%';
+                btn.onclick = toggleProfileDropdown;
                 
-                // Load Profile Data
-                db.ref(`users/${user.uid}/profile`).once('value').then(snap => {
-                    const profile = snap.val() || {};
-                    const name = profile.firstName ? `${profile.firstName} ${profile.lastName || ''}` : (user.displayName || 'User');
-                    
-                    document.getElementById('dropdown-name').innerText = name;
-                    document.getElementById('dropdown-email').innerText = user.email;
-
-                    // Avatar Logic
-                    if (user.photoURL) {
-                        btn.innerHTML = `<img src="${user.photoURL}" class="profile-avatar">`;
-                    } else {
-                        const initial = name.charAt(0).toUpperCase();
-                        // Random Color for Avatar
-                        const colors = ['#F44336', '#E91E63', '#9C27B0', '#673AB7', '#3F51B5', '#2196F3'];
-                        const bg = colors[name.length % colors.length];
-                        btn.innerHTML = `<div class="user-avatar-container" style="background:${bg}">${initial}</div>`;
-                    }
-                });
-
-                btn.onclick = () => menu.classList.toggle('hidden');
-                loadCloudData();
-
+                // Load Cloud Data
+                clientLedgersRef = database.ref(`users/${currentUserId}/clientLedgers`);
+                startRealtimeListener();
             } else {
                 // Guest Mode
-                currentUser = null;
-                btn.className = "rgb-btn px-5 py-2 rounded-xl shadow-lg transition-transform transform hover:scale-105 flex items-center gap-2";
+                currentUserId = null;
+                clientLedgersRef = null;
+                emailDisplay.textContent = "Guest (Not Synced)";
+                dot.classList.add('hidden');
+                
+                // RGB ANIMATION LOGIN BUTTON
+                btn.classList.add('rgb-btn');
                 btn.style.width = 'auto';
-                btn.style.height = 'auto';
-                btn.innerHTML = 'LOG IN';
-                btn.onclick = () => toggleAuthModal(true);
-                menu.classList.add('hidden');
+                btn.style.borderRadius = '0.75rem'; // rounded-xl
+                btn.style.padding = '0 16px';
+                btn.innerHTML = `LOG IN`;
                 
-                // Load Local
-                const local = localStorage.getItem('jar_local');
-                if(local) appData = JSON.parse(local);
-                else appData = { activeClient: DEFAULT_CLIENT, clients: { [DEFAULT_CLIENT]: { tasks: [], payments: [], rate: 150 } } };
+                btn.onclick = showAuthModal;
                 
-                renderUI();
+                // Load Local Data
+                const localData = JSON.parse(localStorage.getItem('jarLocalDefaultClient'));
+                clientLedgers = { 
+                    activeClientName: DEFAULT_CLIENT_NAME, 
+                    clients: { [DEFAULT_CLIENT_NAME]: localData || { tasks: [], payments: [], settings: { hourlyRate: 150 } } } 
+                };
+                renderAllClientData();
             }
         });
 
-        // --- AUTH ACTIONS ---
-        function toggleAuthModal(show) {
-            document.getElementById('auth-modal').classList.toggle('hidden', !show);
-        }
+        // --- DATA LOGIC (FIXED CALCULATIONS) ---
+        const getOrCreateClientData = (name) => {
+            if (!clientLedgers.clients[name]) {
+                clientLedgers.clients[name] = { tasks: [], payments: [], settings: { hourlyRate: 150 } };
+            }
+            return clientLedgers.clients[name];
+        };
 
-        function toggleAuthMode() {
-            isLogin = !isLogin;
-            document.getElementById('auth-header').innerText = isLogin ? "Welcome" : "Create Account";
-            document.getElementById('btn-submit-auth').innerText = isLogin ? "Log In" : "Sign Up";
-            document.getElementById('auth-switch-text').innerText = isLogin ? "New here?" : "Have an account?";
-            document.getElementById('auth-switch-btn').innerText = isLogin ? "Create Account" : "Log In";
-            document.getElementById('signup-fields').classList.toggle('hidden', isLogin);
-            document.getElementById('btn-forgot').classList.toggle('hidden', !isLogin);
-        }
+        // Function to safely get numeric input
+        const getNum = (id) => {
+            const val = document.getElementById(id).value;
+            return parseFloat(val === "" ? 0 : val);
+        };
 
-        document.getElementById('btn-submit-auth').onclick = async () => {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
+        const addTask = () => {
+            const hr = getNum('task-hr-input');
+            const min = getNum('task-min-input');
+            const sec = getNum('task-sec-input');
 
-            if (!email || !pass) return alert("Email and Password required");
+            if (hr === 0 && min === 0 && sec === 0) return alert("Enter a duration.");
+            if (hr < 0 || min < 0 || sec < 0) return alert("Negative time not allowed.");
 
-            try {
-                if (isLogin) {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                    toggleAuthModal(false);
-                } else {
-                    // Registration Flow
-                    const fname = document.getElementById('reg-fname').value;
-                    const lname = document.getElementById('reg-lname').value;
-                    const phone = document.getElementById('reg-phone').value;
-                    
-                    if(!fname || !phone) return alert("Name and Phone required");
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            if (!clientData.tasks) clientData.tasks = [];
 
-                    const cred = await auth.createUserWithEmailAndPassword(email, pass);
-                    await cred.user.sendEmailVerification();
-                    
-                    // Save Profile
-                    await db.ref(`users/${cred.user.uid}/profile`).set({
-                        firstName: fname,
-                        lastName: lname,
-                        mobile: phone,
-                        email: email
-                    });
+            clientData.tasks.push({
+                hours: hr, minutes: min, seconds: sec,
+                decimalHours: hr + (min / 60) + (sec / 3600),
+                date: new Date().toISOString(),
+                timestamp: Date.now()
+            });
 
-                    alert("Account created! Please check your email to verify before logging in.");
-                    auth.signOut();
-                    toggleAuthModal(false);
-                    toggleAuthMode(); // Switch back to login
-                }
-            } catch (e) {
-                alert(e.message);
+            clearInputs(['task-hr-input', 'task-min-input', 'task-sec-input']);
+            persistData();
+        };
+
+        const addPayment = () => {
+            const amount = getNum('payment-amount-input');
+            if (amount <= 0) return alert("Enter valid amount.");
+
+            const clientData = getOrCreateClientData(clientLedgers.activeClientName);
+            if (!clientData.payments) clientData.payments = [];
+            
+            clientData.payments.push({ 
+                amount: amount, 
+                date: new Date().toISOString(), 
+                timestamp: Date.now() 
+            });
+
+            clearInputs(['payment-amount-input']);
+            persistData();
+        };
+
+        const persistData = () => {
+            renderAllClientData();
+            if (currentUserId && clientLedgersRef) {
+                const dataToSave = JSON.parse(JSON.stringify(clientLedgers));
+                delete dataToSave.clients[DEFAULT_CLIENT_NAME];
+                clientLedgersRef.set(dataToSave);
+            } else if (clientLedgers.clients[DEFAULT_CLIENT_NAME]) {
+                localStorage.setItem('jarLocalDefaultClient', JSON.stringify(clientLedgers.clients[DEFAULT_CLIENT_NAME]));
             }
         };
 
-        function resetPassword() {
-            const email = document.getElementById('auth-email').value;
-            if(!email) return alert("Enter email address first.");
-            auth.sendPasswordResetEmail(email)
-                .then(() => alert("Reset link sent to email."))
-                .catch(e => alert(e.message));
-        }
-
-        function googleLogin() {
-            const p = new firebase.auth.GoogleAuthProvider();
-            if ((typeof window.AndroidApp !== 'undefined') || /Android.*wv/.test(navigator.userAgent)) {
-                auth.signInWithRedirect(p);
-            } else {
-                auth.signInWithPopup(p).then(() => toggleAuthModal(false)).catch(e => alert(e.message));
+        // --- CLIENT MANAGEMENT ACTIONS ---
+        const renameClient = () => {
+            const oldName = clientLedgers.activeClientName;
+            if (!oldName || oldName === DEFAULT_CLIENT_NAME) return;
+            
+            let newName = prompt(`Rename "${oldName}" to:`);
+            if (newName && newName.trim() !== "" && newName.trim() !== oldName) {
+                newName = newName.trim();
+                if (newName === DEFAULT_CLIENT_NAME || clientLedgers.clients[newName]) {
+                    alert("Client name exists or invalid.");
+                    return;
+                }
+                clientLedgers.clients[newName] = clientLedgers.clients[oldName];
+                delete clientLedgers.clients[oldName];
+                clientLedgers.activeClientName = newName;
+                persistData();
             }
-        }
-
-        document.getElementById('logout-btn').onclick = () => {
-            if(window.AndroidApp) window.AndroidApp.clearAppCookies();
-            auth.signOut().then(() => location.reload());
         };
 
-        // --- DATA HANDLING ---
-        function loadCloudData() {
-            db.ref(`users/${currentUser.uid}/ledger`).on('value', snap => {
-                const val = snap.val();
-                if(val) {
-                    appData = val;
-                    // Ensure default client exists locally merged
-                    const local = JSON.parse(localStorage.getItem('jar_local'));
-                    if(local && local.clients[DEFAULT_CLIENT]) {
-                         appData.clients[DEFAULT_CLIENT] = local.clients[DEFAULT_CLIENT];
-                    }
+        const deleteClient = () => {
+            const target = clientLedgers.activeClientName;
+            if (!target || target === DEFAULT_CLIENT_NAME) return;
+            
+            if (confirm(`Delete "${target}" and all its data permanently?`)) {
+                delete clientLedgers.clients[target];
+                // Switch to another client or default
+                const keys = Object.keys(clientLedgers.clients);
+                clientLedgers.activeClientName = keys.length > 0 ? keys[0] : DEFAULT_CLIENT_NAME;
+                persistData();
+            }
+        };
+
+        document.getElementById('rename-client-btn').onclick = renameClient;
+        document.getElementById('delete-client-btn').onclick = deleteClient;
+
+        document.getElementById('add-new-client-btn').onclick = () => {
+            const name = prompt("New Client Name:");
+            if (name && name.trim()) {
+                const trimmed = name.trim();
+                if (!clientLedgers.clients[trimmed]) {
+                    clientLedgers.activeClientName = trimmed;
+                    persistData();
                 } else {
-                    appData = { activeClient: null, clients: {} };
+                    alert("Client already exists.");
                 }
-                renderUI();
-            });
-        }
-
-        function saveData() {
-            renderUI();
-            if (currentUser) {
-                const cleanData = JSON.parse(JSON.stringify(appData));
-                delete cleanData.clients[DEFAULT_CLIENT]; // Don't upload default
-                db.ref(`users/${currentUser.uid}/ledger`).set(cleanData);
-            } 
-            
-            if (appData.clients[DEFAULT_CLIENT]) {
-                const localWrap = { activeClient: DEFAULT_CLIENT, clients: { [DEFAULT_CLIENT]: appData.clients[DEFAULT_CLIENT] } };
-                localStorage.setItem('jar_local', JSON.stringify(localWrap));
             }
-        }
+        };
 
-        // --- CLIENT MANAGEMENT ---
-        function addNewClient() {
-            if (!currentUser) {
-                // Fix: Guest mode logic check
-                const name = prompt("New Client Name:");
-                if (name) createClient(name);
-            } else {
-                // Logged In
-                const name = prompt("New Client Name:");
-                if (name) createClient(name);
+        // --- UI RENDERING ---
+        const renderAllClientData = () => {
+            renderClientSelector();
+            const clientName = clientLedgers.activeClientName;
+            const data = clientLedgers.clients[clientName];
+            
+            if (!data) return;
+
+            document.getElementById('active-client-display').textContent = clientName;
+            document.getElementById('hourly-rate-input').value = data.settings.hourlyRate;
+
+            const tasks = Object.values(data.tasks || {});
+            const payments = Object.values(data.payments || {});
+            
+            const totalHours = tasks.reduce((sum, t) => sum + t.decimalHours, 0);
+            const totalBilled = totalHours * data.settings.hourlyRate;
+            const totalPaid = payments.reduce((sum, p) => sum + p.amount, 0);
+            const balance = totalBilled - totalPaid;
+
+            // Summary
+            const createCard = (label, value, colorClass) => `
+                <div class="bg-white dark:bg-dark-card p-4 rounded-xl shadow-sm border border-gray-100 dark:border-dark-border text-center">
+                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">${label}</p>
+                    <p class="text-2xl font-extrabold mt-1 ${colorClass}">${value}</p>
+                </div>`;
+
+            const balanceColor = balance > 0 ? 'text-accent' : (balance < 0 ? 'text-danger' : 'text-gray-600 dark:text-gray-300');
+            
+            document.getElementById('summary-results').innerHTML = 
+                createCard('Total Hours', formatTime(totalHours), 'text-primary') +
+                createCard('Total Billed', formatCurrency(totalBilled), 'text-gray-800 dark:text-white') +
+                createCard('Received', formatCurrency(totalPaid), 'text-accent') +
+                createCard('Net Balance', formatCurrency(balance), balanceColor);
+
+            // Task List (With Sr No & Client Name)
+            renderList('task-list', tasks, (t, i) => `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-800 dark:text-white text-sm">
+                           <span class="text-primary mr-1">${i}.</span> ${clientName}
+                        </p>
+                        <p class="text-xs text-gray-500">${t.hours}h ${t.minutes}m ${t.seconds}s • ${new Date(t.date).toLocaleDateString()}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-primary text-sm">${formatCurrency(t.decimalHours * data.settings.hourlyRate)}</p>
+                        <button onclick="deleteItem('tasks', ${t.timestamp})" class="text-danger text-xs hover:underline mt-1">Delete</button>
+                    </div>
+                </div>
+            `);
+
+            // Payment List (Amount Received + Sr No)
+            renderList('payment-list', payments, (p, i) => `
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="font-bold text-gray-800 dark:text-white text-sm">
+                             <span class="text-primary mr-1">${i}.</span> Amount Received
+                        </p>
+                        <p class="text-xs text-gray-500">${new Date(p.date).toLocaleDateString()}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-bold text-accent text-sm">${formatCurrency(p.amount)}</p>
+                        <button onclick="deleteItem('payments', ${p.timestamp})" class="text-danger text-xs hover:underline mt-1">Delete</button>
+                    </div>
+                </div>
+            `);
+        };
+
+        // --- UTILS ---
+        const formatCurrency = (num) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(num);
+        const formatTime = (dec) => {
+            const h = Math.floor(dec);
+            const m = Math.floor((dec - h) * 60);
+            return `${h}h ${m}m`;
+        };
+        const clearInputs = (ids) => ids.forEach(id => document.getElementById(id).value = '');
+        
+        const renderList = (id, items, rowHtml) => {
+            const el = document.getElementById(id);
+            if (items.length === 0) {
+                el.innerHTML = `<p class="text-center text-sm text-gray-400 py-8">No entries yet.</p>`;
+                return;
             }
-        }
+            // Sort descending, then map
+            el.innerHTML = items.sort((a,b) => b.timestamp - a.timestamp).map((item, idx) => {
+                // Sr No: Total items - current index (since it's sorted desc)
+                const srNo = items.length - idx; 
+                return `<div class="p-3 border-b border-gray-50 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-dark-border/50 transition-colors last:border-0">${rowHtml(item, srNo)}</div>`;
+            }).join('');
+        };
 
-        function createClient(name) {
-            if(!name.trim()) return;
-            if(appData.clients[name]) return alert("Exists!");
-            appData.clients[name] = { tasks: [], payments: [], rate: 150 };
-            appData.activeClient = name;
-            saveData();
-        }
-
-        function renameClient() {
-            const old = appData.activeClient;
-            if(!old || old === DEFAULT_CLIENT) return;
-            const newName = prompt("Rename to:", old);
-            if(newName && !appData.clients[newName]) {
-                appData.clients[newName] = appData.clients[old];
-                delete appData.clients[old];
-                appData.activeClient = newName;
-                saveData();
+        window.deleteItem = (type, ts) => {
+            if(confirm("Delete this entry?")) {
+                const data = getOrCreateClientData(clientLedgers.activeClientName);
+                data[type] = data[type].filter(i => i.timestamp !== ts);
+                persistData();
             }
-        }
+        };
 
-        function deleteClient() {
-            const target = appData.activeClient;
-            if(!target || target === DEFAULT_CLIENT) return;
-            if(confirm(`Delete ${target}?`)) {
-                delete appData.clients[target];
-                appData.activeClient = null;
-                saveData();
+        window.updateHourlyRate = () => {
+            const rate = getNum('hourly-rate-input');
+            if(rate > 0) {
+                getOrCreateClientData(clientLedgers.activeClientName).settings.hourlyRate = rate;
+                persistData();
             }
-        }
+        };
 
-        // --- ENTRY LOGIC (100% FIX) ---
-        function addTask() {
-            if(isDefaultRestricted()) return;
-            const h = parseFloat(document.getElementById('in-hr').value) || 0;
-            const m = parseFloat(document.getElementById('in-min').value) || 0;
-            const s = parseFloat(document.getElementById('in-sec').value) || 0;
+        const renderClientSelector = () => {
+            const select = document.getElementById('client-selector');
+            const filter = document.getElementById('client-search-input').value.toLowerCase();
             
-            if(h+m+s === 0) return alert("Enter time");
-            
-            const client = getActiveClient();
-            if(!client.tasks) client.tasks = [];
-            
-            client.tasks.push({
-                h, m, s,
-                dec: h + (m/60) + (s/3600),
-                date: new Date().toISOString(),
-                ts: Date.now()
-            });
-            
-            ['in-hr','in-min','in-sec'].forEach(id=>document.getElementById(id).value='');
-            saveData();
-        }
-
-        function addPayment() {
-            if(isDefaultRestricted()) return;
-            const val = parseFloat(document.getElementById('in-amount').value);
-            if(!val) return alert("Enter amount");
-            
-            const client = getActiveClient();
-            if(!client.payments) client.payments = [];
-            
-            client.payments.push({
-                amount: val,
-                date: new Date().toISOString(),
-                ts: Date.now()
-            });
-            
-            document.getElementById('in-amount').value='';
-            saveData();
-        }
-
-        function updateRate() {
-            const val = parseFloat(document.getElementById('input-rate').value);
-            if(val) {
-                getActiveClient().rate = val;
-                saveData();
-            }
-        }
-
-        function deleteEntry(type, ts) {
-            if(confirm("Delete?")) {
-                const client = getActiveClient();
-                client[type] = client[type].filter(i => i.ts !== ts);
-                saveData();
-            }
-        }
-
-        // --- UI RENDERER ---
-        function renderUI() {
-            // 1. Populate Selector
-            const select = document.getElementById('select-client');
-            const filter = document.getElementById('search-client').value.toLowerCase();
-            const names = Object.keys(appData.clients).sort();
-            
-            select.innerHTML = "";
-            let hasMatch = false;
-            names.forEach(name => {
-                if(name.toLowerCase().includes(filter)) {
-                    const opt = document.createElement('option');
-                    opt.value = name;
-                    opt.text = name;
-                    if(name === appData.activeClient) opt.selected = true;
-                    select.appendChild(opt);
-                    hasMatch = true;
-                }
-            });
-            
-            // If active client deleted or null, pick first
-            if (!appData.clients[appData.activeClient] && names.length > 0) {
-                appData.activeClient = names[0];
-                saveData(); // save the switch
-                return; 
+            let clients = [DEFAULT_CLIENT_NAME];
+            if (currentUserId) {
+                clients = [DEFAULT_CLIENT_NAME, ...Object.keys(clientLedgers.clients).filter(c => c !== DEFAULT_CLIENT_NAME)];
             }
 
-            // 2. Manage Visibility (Logged In + Default Client Logic)
-            const isDefault = appData.activeClient === DEFAULT_CLIENT;
-            const dashboard = document.getElementById('dashboard-content');
-            const emptyState = document.getElementById('empty-state');
-            const renameBtn = document.getElementById('btn-rename');
-            const deleteBtn = document.getElementById('btn-delete');
+            select.innerHTML = clients
+                .filter(c => c.toLowerCase().includes(filter))
+                .map(c => `<option value="${c}" ${c === clientLedgers.activeClientName ? 'selected' : ''}>${c}</option>`)
+                .join('');
+            
+            // Handle Client Utility Button States
+            const isDefault = clientLedgers.activeClientName === DEFAULT_CLIENT_NAME;
+            const renameBtn = document.getElementById('rename-client-btn');
+            const deleteBtn = document.getElementById('delete-client-btn');
 
             renameBtn.disabled = isDefault;
             deleteBtn.disabled = isDefault;
-            renameBtn.classList.toggle('disabled-area', isDefault);
-            deleteBtn.classList.toggle('disabled-area', isDefault);
-
-            if (currentUser && isDefault) {
-                // Logged in but viewing default -> Hide Dashboard
-                dashboard.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return; 
-            } 
             
-            if (!appData.activeClient) {
-                dashboard.classList.add('hidden');
-                emptyState.classList.remove('hidden');
-                return;
+            if (isDefault) {
+                renameBtn.classList.add('disabled-btn');
+                deleteBtn.classList.add('disabled-btn');
+            } else {
+                renameBtn.classList.remove('disabled-btn');
+                deleteBtn.classList.remove('disabled-btn');
             }
-
-            dashboard.classList.remove('hidden');
-            emptyState.classList.add('hidden');
-
-            // 3. Render Dashboard Data
-            const data = getActiveClient();
-            document.getElementById('display-client-name').innerText = appData.activeClient;
-            document.getElementById('input-rate').value = data.rate;
-
-            const tasks = data.tasks || [];
-            const payments = data.payments || [];
-            
-            const hrs = tasks.reduce((a,b)=>a+b.dec, 0);
-            const billed = hrs * data.rate;
-            const paid = payments.reduce((a,b)=>a+b.amount, 0);
-            const bal = billed - paid;
-
-            // Summary Cards
-            const cardHTML = (t, v, c) => `
-                <div class="p-4 rounded-2xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border shadow-sm text-center">
-                    <p class="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">${t}</p>
-                    <p class="text-2xl font-extrabold mt-1 ${c}">${v}</p>
-                </div>`;
-            
-            document.getElementById('summary-cards').innerHTML = 
-                cardHTML("Total Hours", formatTime(hrs), "text-primary") +
-                cardHTML("Billed", formatMoney(billed), "text-gray-900 dark:text-white") +
-                cardHTML("Received", formatMoney(paid), "text-accent") +
-                cardHTML("Balance", formatMoney(bal), bal < 0 ? "text-danger" : "text-accent");
-
-            // Lists (FIXED FORMAT)
-            const taskList = document.getElementById('list-tasks');
-            taskList.innerHTML = tasks.length ? tasks.sort((a,b)=>b.ts-a.ts).map((t, i) => `
-                <div class="p-3 border-b border-gray-50 dark:border-white/5 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-gray-800 dark:text-white text-sm">
-                            <span class="text-primary mr-2">#${tasks.length - i}</span> ${appData.activeClient}
-                        </p>
-                        <p class="text-xs text-gray-400">${t.h}h ${t.m}m ${t.s}s • ${new Date(t.date).toLocaleDateString()}</p>
-                    </div>
-                    <div class="text-right">
-                         <p class="font-bold text-sm text-primary">${formatMoney(t.dec * data.rate)}</p>
-                         <button onclick="deleteEntry('tasks', ${t.ts})" class="text-xs text-danger hover:underline">Delete</button>
-                    </div>
-                </div>`).join('') : '<p class="text-center text-xs text-gray-400 py-4">No tasks</p>';
-
-            const payList = document.getElementById('list-payments');
-            payList.innerHTML = payments.length ? payments.sort((a,b)=>b.ts-a.ts).map((p, i) => `
-                <div class="p-3 border-b border-gray-50 dark:border-white/5 flex justify-between items-center">
-                    <div>
-                        <p class="font-bold text-gray-800 dark:text-white text-sm">
-                            <span class="text-accent mr-2">#${payments.length - i}</span> Amount Received
-                        </p>
-                        <p class="text-xs text-gray-400">${new Date(p.date).toLocaleDateString()}</p>
-                    </div>
-                    <div class="text-right">
-                         <p class="font-bold text-sm text-accent">${formatMoney(p.amount)}</p>
-                         <button onclick="deleteEntry('payments', ${p.ts})" class="text-xs text-danger hover:underline">Delete</button>
-                    </div>
-                </div>`).join('') : '<p class="text-center text-xs text-gray-400 py-4">No payments</p>';
-        }
-
-        // Helpers
-        const getActiveClient = () => appData.clients[appData.activeClient];
-        const isDefaultRestricted = () => currentUser && appData.activeClient === DEFAULT_CLIENT;
-        const formatMoney = n => new Intl.NumberFormat('en-IN', {style:'currency', currency:'INR'}).format(n);
-        const formatTime = d => `${Math.floor(d)}h ${Math.floor((d%1)*60)}m`;
-
-        // Event Listeners
-        document.getElementById('select-client').onchange = e => {
-            appData.activeClient = e.target.value;
-            saveData();
         };
-        document.getElementById('search-client').oninput = renderUI;
-        document.getElementById('theme-toggle').onclick = toggleTheme;
 
-        // Click outside closes dropdown
-        window.onclick = e => {
-            if(!document.getElementById('user-menu-container').contains(e.target)) {
+        document.getElementById('client-selector').onchange = (e) => {
+            clientLedgers.activeClientName = e.target.value;
+            persistData();
+        };
+        document.getElementById('client-search-input').oninput = renderClientSelector;
+
+        // Auth & UI Toggles
+        const showAuthModal = () => document.getElementById('auth-modal-backdrop').classList.remove('hidden');
+        window.hideAuthModal = () => document.getElementById('auth-modal-backdrop').classList.add('hidden');
+        window.toggleProfileDropdown = () => document.getElementById('profile-dropdown').classList.toggle('hidden');
+        
+        document.getElementById('auth-toggle-link').onclick = () => {
+            isLoginMode = !isLoginMode;
+            document.getElementById('auth-title').textContent = isLoginMode ? "Welcome Back" : "Create Account";
+            document.getElementById('auth-submit-btn').textContent = isLoginMode ? "Log In" : "Sign Up";
+            document.getElementById('auth-toggle-link').textContent = isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Log In";
+        };
+
+        document.getElementById('auth-submit-btn').onclick = () => {
+            const e = document.getElementById('auth-email').value;
+            const p = document.getElementById('auth-password').value;
+            if(!e || !p) return alert("Fill all fields");
+            
+            const action = isLoginMode ? auth.signInWithEmailAndPassword(e, p) : auth.createUserWithEmailAndPassword(e, p);
+            action.then(() => hideAuthModal()).catch(err => alert(err.message));
+        };
+
+        window.signInWithGoogle = () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            if ((typeof window.AndroidApp !== 'undefined') || /Android.*wv/.test(navigator.userAgent)) {
+                auth.signInWithRedirect(provider);
+            } else {
+                auth.signInWithPopup(provider).then(() => hideAuthModal()).catch(e => alert(e.message));
+            }
+        };
+
+        document.getElementById('dropdown-logout-btn').onclick = () => {
+            if (window.AndroidApp) window.AndroidApp.clearAppCookies();
+            auth.signOut().then(() => location.reload());
+        };
+
+        // Listeners
+        document.getElementById('theme-toggle-btn').onclick = toggleTheme;
+        window.onclick = (e) => {
+            if (!document.getElementById('user-action-container').contains(e.target)) {
                 document.getElementById('profile-dropdown').classList.add('hidden');
             }
         };
 
-        initTheme();
-        renderUI(); // Initial Render
+        // Initial Render
+        updateThemeUI(localStorage.getItem('theme') || 'system');
+        
+        function startRealtimeListener() {
+            if(!clientLedgersRef) return;
+            clientLedgersRef.on('value', (snap) => {
+                const val = snap.val();
+                if (val) {
+                    const local = clientLedgers.clients[DEFAULT_CLIENT_NAME];
+                    clientLedgers = val;
+                    if(!clientLedgers.clients) clientLedgers.clients = {};
+                    clientLedgers.clients[DEFAULT_CLIENT_NAME] = local;
+                }
+                renderAllClientData();
+            });
+        }
 
+        renderAllClientData();
     </script>
 </body>
 </html>
